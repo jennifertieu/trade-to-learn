@@ -2,15 +2,23 @@ import Head from "next/head";
 import Image from "next/image";
 import styles from "@/styles/home.module.css";
 import { useState, useEffect } from "react";
+import Trade from "@/components/Trade";
 
 export default function Home() {
-  const [data, setData] = useState(null);
+  const [stockDailyData, setStockDailyData] = useState(null);
+  const data = {
+    symbol: "AAPL",
+    close: 161.23,
+    high: 165.25,
+    low: 160.21,
+    open: 161
+  }
 
   // useEffect(() => {
   //   const fetchData = async() => {
   //     const response = await fetch("/api/open-close");
   //     const data = await response.json();
-  //     setData(data);
+  //     setStockDailyData(data);
   //   }
   //   fetchData();
   // }, [])
@@ -24,29 +32,42 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <section className={styles.main}>
-        {/* {
-          data ?
-            <table>
-              <thead>
-                <tr>
-                  <th>Ticker</th>
-                  <th>Close Price</th>
-                  <th>Highest Price</th>
-                  <th>Lowest Price</th>
-                  <th>Open Price</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>{data["symbol"]}</td>
-                  <td>{data["close"]}</td>
-                  <td>{data["high"]}</td>
-                  <td>{data["low"]}</td>
-                  <td>{data["open"]}</td>
-                </tr>
-              </tbody>
-            </table> : <div>Loading...</div> 
-        } */}
+        <div className={styles.heading}>
+          <h1>Stocks</h1>
+          <p>Trading Common Stocks</p>
+        </div>
+        <section className={styles.section}>
+          <article>
+            <h2>Portfolio</h2>
+            <p>$10,000</p>
+          </article>
+          {
+            data ?
+              <table>
+                <thead>
+                  <tr>
+                    <th>Ticker</th>
+                    <th>Close Price</th>
+                    <th>Highest Price</th>
+                    <th>Lowest Price</th>
+                    <th>Open Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{data["symbol"]}</td>
+                    <td>{data["close"]}</td>
+                    <td>{data["high"]}</td>
+                    <td>{data["low"]}</td>
+                    <td>{data["open"]}</td>
+                  </tr>
+                </tbody>
+              </table> : <div>Loading...</div>
+          }
+        </section>
+        <div className={styles.trade}>
+          <Trade type="stock"/>
+        </div>
       </section>
     </>
   );
