@@ -1,18 +1,33 @@
 import Head from "next/head";
 import Image from "next/image";
-import styles from "@/styles/home.module.css";
 import { useState, useEffect } from "react";
 import Trade from "@/components/Trade";
 
 export default function Home() {
   const [stockDailyData, setStockDailyData] = useState(null);
-  const data = {
-    symbol: "AAPL",
-    close: 161.23,
-    high: 165.25,
-    low: 160.21,
-    open: 161
-  }
+  const stockData = [
+    {
+      symbol: "AAPL",
+      close: 161.23,
+      high: 165.25,
+      low: 160.21,
+      open: 161,
+    },
+    {
+      symbol: "GOOG",
+      close: 161.23,
+      high: 165.25,
+      low: 160.21,
+      open: 161,
+    },
+    {
+      symbol: "AMZN",
+      close: 161.23,
+      high: 165.25,
+      low: 160.21,
+      open: 161,
+    },
+  ];
 
   // useEffect(() => {
   //   const fetchData = async() => {
@@ -31,42 +46,45 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <section className={styles.main}>
-        <div className={styles.heading}>
+      <section className="grid grid-cols-3">
+        <div className="col-span-2 row-1">
           <h1>Stocks</h1>
           <p>Trading Common Stocks</p>
         </div>
-        <section className={styles.section}>
+        <section className="col-span-2">
           <article>
             <h2>Portfolio</h2>
             <p>$10,000</p>
           </article>
-          {
-            data ?
-              <table>
-                <thead>
-                  <tr>
-                    <th>Ticker</th>
-                    <th>Close Price</th>
-                    <th>Highest Price</th>
-                    <th>Lowest Price</th>
-                    <th>Open Price</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
+          {stockData.length > 0 ? (
+            <table>
+              <thead>
+                <tr>
+                  <th>Ticker</th>
+                  <th>Close Price</th>
+                  <th>Highest Price</th>
+                  <th>Lowest Price</th>
+                  <th>Open Price</th>
+                </tr>
+              </thead>
+              <tbody>
+                {stockData.map((data, index) => (
+                  <tr key={index}>
                     <td>{data["symbol"]}</td>
                     <td>{data["close"]}</td>
                     <td>{data["high"]}</td>
                     <td>{data["low"]}</td>
                     <td>{data["open"]}</td>
                   </tr>
-                </tbody>
-              </table> : <div>Loading...</div>
-          }
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <div>Loading...</div>
+          )}
         </section>
-        <div className={styles.trade}>
-          <Trade type="stock"/>
+        <div className="col-span-1">
+          <Trade type="stock" />
         </div>
       </section>
     </>
