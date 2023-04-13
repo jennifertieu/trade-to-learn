@@ -6,46 +6,47 @@ type TradeProps = {
 
 const Trade = (tradeProps: TradeProps) => {
   return (
-    <article>
+    <article className="rounded-lg p-6 w-full sm:w-4/12 border border-neutral-400 dark:bg-neutral-800 dark:border-0">
       <form>
-        <h2>Trade</h2>
+        <h2 className="text-xl font-semibold">Trade</h2>
         {tradeProps.type === "crypto" ? (
-          <div>
-            <label>Symbol</label>
-            <select name="asset">
+          <div className="mt-6">
+            <label className="block" htmlFor="asset">Symbol</label>
+            <select className="rounded-lg w-full p-2" name="asset">
               <option value="BTC">Bitcoin</option>
               <option value="ETH">Ethereum</option>
             </select>
           </div>
         ) : (
-          <div>
-            <label>Symbol</label>
-            <select name="asset">
-              <option value="AAPL">AAPL - Apple</option>
-              <option value="TSLA">Tesla</option>
-              <option value="WAL">Walmart</option>
+          <div className="mt-6">
+            <label className="block" htmlFor="asset">Symbol</label>
+            <select className="rounded-lg w-full p-2" name="asset">
+              <option value="AAPL">AAPL</option>
+              <option value="TSLA">TSLA</option>
+              <option value="GOOG">GOOG</option>
             </select>
           </div>
         )}
-        <div>
-          <label>Action</label>
-          <select name="action">
+        <div className="mt-6">
+          <label className="block" htmlFor="action">Action</label>
+          <select className="rounded-lg w-full p-2" name="action">
             <option value="Buy">Buy</option>
             <option value="Sell">Sell</option>
           </select>
         </div>
-        <div>
-          <label>Quantity</label>
-          <input type="number" name="quantity" />
+        <div className="mt-6">
+          <label className="block" htmlFor="quantity">Quantity</label>
+          <input className="rounded-lg w-full p-2" type="number" name="quantity" />
         </div>
-        <div>
-          <label>Order Type</label>
-          <input type="text" name="orderType" />
+        <div className="mt-6">
+          <label className="block" htmlFor="orderType">Order Type</label>
+          <input className="rounded-lg w-full p-2" type="text" name="orderType" />
         </div>
-        <div>
-          <label>Duration</label>
-          <input type="text" name="duration" />
+        <div className="mt-6">
+          <label className="block" htmlFor="duration">Duration</label>
+          <input className="rounded-lg w-full p-2" type="text" name="duration" />
         </div>
+        <button className="rounded-lg bg-blue-600 dark:bg-blue-400 text-neutral-50 py-2 px-4 mt-6 w-full">Submit</button>
       </form>
     </article>
   );
