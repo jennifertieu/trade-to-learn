@@ -3,6 +3,7 @@ import Image from "next/image";
 import { useState, useEffect } from "react";
 import Trade from "@/components/Trade";
 import dynamic from "next/dynamic";
+import { stockData } from "../data/stockDataExample";
 const SymbolOverviewNoSSR = dynamic(
   () => import("react-ts-tradingview-widgets").then((w) => w.SymbolOverview),
   {
@@ -11,32 +12,7 @@ const SymbolOverviewNoSSR = dynamic(
 );
 
 export default function Home() {
-  const [stockDailyData, setStockDailyData] = useState(null);
-  const stockData = [
-    {
-      ticker: "AAPL",
-      name: "Apple",
-      exchange_short: "NASDAQ",
-      price: 164.9,
-      currency: "USD",
-      day_change: 2.9,
-    },
-    {
-      ticker: "GOOG",
-      name: "Google",
-      exchange_short: "NASDAQ",
-      price: 107.15,
-      currency: "USD",
-      day_change: 2.5,
-    },
-    {
-      ticker: "AMZN",
-      name: "Amazon",
-      exchange_short: "NASDAQ",
-      price: 186.08,
-      day_change: 2.99,
-    },
-  ];
+  const [stockDailyData, setStockDailyData] = useState(stockData);
 
   // useEffect(() => {
   //   const fetchData = async() => {
@@ -61,7 +37,7 @@ export default function Home() {
           Trading Common Stocks
         </p>
       </section>
-      <section className="flex flex-col gap-4 mt-4 sm:flex-row">
+      <section className="flex flex-col gap-4 mt-4 lg:flex-row">
         <section className="flex flex-col gap-4 grow">
           <article className="rounded-lg p-4 border border-neutral-400 dark:bg-neutral-800 dark:border-0">
             <h2 className="text-md">Portfolio</h2>
