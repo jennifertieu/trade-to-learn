@@ -1,7 +1,7 @@
 const Footer = () => {
   const year = new Date(Date.now()).getFullYear();
   return (
-    <footer className="text-center p-4 text-sm">
+    <footer className="text-center p-4 text-sm shrink-0">
       <div>
         {year} © &nbsp;
         <a
