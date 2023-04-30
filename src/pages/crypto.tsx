@@ -3,10 +3,10 @@ import Head from "next/head";
 import Trade from "@/components/Trade";
 import PortfolioCard from "@/components/PortfolioCard";
 import { cryptoData } from "@/data/cryptoDataExample";
-import Portfolio from "@/interfaces/Portfolio";
 import Table from "@/components/Table";
+import PortfolioProps from "@/interfaces/PortfolioProps";
 
-const Crypto = ({ portfolio, updatePortfolio }: Portfolio) => {
+const Crypto = ({ portfolio, updatePortfolio }: PortfolioProps) => {
   const [cryptoDailyData, setCryptoDailyData] = useState(cryptoData);
   // useEffect(() => {
   //   const fetchData = async() => {
@@ -23,7 +23,7 @@ const Crypto = ({ portfolio, updatePortfolio }: Portfolio) => {
         <title>Trade To Learn | Crypto</title>
       </Head>
       <section>
-        <h1 className="text-2xl font-bold">Crypto</h1>
+        <h1 className="text-3xl font-bold">Crypto</h1>
         <p className="text-sm text-neutral-500 dark:text-neutral-300">
           Trading cryptocurrency
         </p>
@@ -70,6 +70,7 @@ const Crypto = ({ portfolio, updatePortfolio }: Portfolio) => {
           </article>
         </section>
         <Trade
+          portfolio={portfolio}
           updatePortfolio={updatePortfolio}
           tradeQuoteData={cryptoData.map(({ name, ticker, price }) => ({
             name,

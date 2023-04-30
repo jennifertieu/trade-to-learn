@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import Trade from "@/components/Trade";
 import dynamic from "next/dynamic";
 import { stockData } from "../data/stockDataExample";
-import Portfolio from "@/interfaces/Portfolio";
+import PortfolioProps from "@/interfaces/PortfolioProps";
 import Table from "@/components/Table";
 const SymbolOverviewNoSSR = dynamic(
   () => import("react-ts-tradingview-widgets").then((w) => w.SymbolOverview),
@@ -14,7 +14,7 @@ const SymbolOverviewNoSSR = dynamic(
   }
 );
 
-export default function Home({ portfolio, updatePortfolio }: Portfolio) {
+export default function Home({ portfolio, updatePortfolio }: PortfolioProps) {
   const [stockDailyData, setStockDailyData] = useState(stockData);
   // useEffect(() => {
   //   const fetchData = async() => {
@@ -46,7 +46,7 @@ export default function Home({ portfolio, updatePortfolio }: Portfolio) {
             updatePortfolio={updatePortfolio}
           />
           <article className="p-4 rounded-lg overflow-auto border border-neutral-400 dark:bg-neutral-800 dark:border-0">
-            <h2 className="text-lg font-semibold">Quotes</h2>
+            <h2 className="text-lg">Quotes</h2>
             <Table
               tableData={stockData}
               tableColumns={["Name", "Ticker", "Price", "Day Change"]}
@@ -81,6 +81,7 @@ export default function Home({ portfolio, updatePortfolio }: Portfolio) {
           </article>
         </section>
         <Trade
+          portfolio={portfolio}
           updatePortfolio={updatePortfolio}
           tradeQuoteData={stockData.map(({ name, ticker, price }) => ({
             name,

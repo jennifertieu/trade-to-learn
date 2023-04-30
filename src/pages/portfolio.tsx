@@ -1,18 +1,18 @@
 import { transactions } from "@/data/transactionsExample";
 import PortfolioCard from "@/components/PortfolioCard";
-import Portfolio from "@/interfaces/Portfolio";
 import { portfolioData } from "@/data/portfolioDataExample";
 import Head from "next/head";
 import Table from "@/components/Table";
+import PortfolioProps from "@/interfaces/PortfolioProps";
 
-const Portfolio = ({ portfolio, updatePortfolio }: Portfolio) => {
+const Portfolio = ({ portfolio, updatePortfolio }: PortfolioProps) => {
   return (
     <>
       <Head>
         <title>Trade To Learn | Portfolio</title>
       </Head>
       <section>
-        <h1 className="text-2xl font-bold">Portfolio</h1>
+        <h1 className="text-3xl font-bold">Portfolio</h1>
         <p className="text-sm text-neutral-500 dark:text-neutral-300">
           Account Overview
         </p>
@@ -23,7 +23,7 @@ const Portfolio = ({ portfolio, updatePortfolio }: Portfolio) => {
           updatePortfolio={updatePortfolio}
         />
         <article className="p-4 rounded-lg overflow-auto border border-neutral-400 dark:bg-neutral-800 dark:border-0">
-          <h2 className="text-lg font-semibold">Holdings</h2>
+          <h2 className="text-lg">Holdings</h2>
           <Table
             tableData={portfolioData.stocks}
             tableColumns={[
@@ -33,6 +33,7 @@ const Portfolio = ({ portfolio, updatePortfolio }: Portfolio) => {
               "Purchase Price",
               "Quantity",
               "Day Change",
+              "Total Change",
               "Total Value",
             ]}
             tableRenderRow={(data) => {
@@ -72,6 +73,12 @@ const Portfolio = ({ portfolio, updatePortfolio }: Portfolio) => {
                       minimumFractionDigits: 2,
                     })}
                   </td>
+                  <td className="text-green-700 dark:text-green-400">
+                    {(100 / 100).toLocaleString("en-US", {
+                      style: "percent",
+                      minimumFractionDigits: 2,
+                    })}
+                  </td>
                   <td>{data["total"]}</td>
                 </>
               );
@@ -79,13 +86,14 @@ const Portfolio = ({ portfolio, updatePortfolio }: Portfolio) => {
           />
         </article>
         <article className="p-4 rounded-lg overflow-auto border border-neutral-400 dark:bg-neutral-800 dark:border-0">
-          <h2 className="text-lg font-semibold">Trade History</h2>
+          <h2 className="text-lg">Trade History</h2>
           <Table
             tableData={transactions}
             tableColumns={[
+              "Date",
               "Name",
               "Ticker",
-              "Purchase Price",
+              "Price",
               "Quantity",
               "Total Value",
             ]}

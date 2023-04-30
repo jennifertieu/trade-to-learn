@@ -3,13 +3,17 @@ import { SyntheticEvent } from "react";
 import { transactions } from "@/data/transactionsExample";
 import TradeRequest from "@/interfaces/TradeRequest";
 import TradeQuoteData from "@/interfaces/TradeQuoteData";
+import PortfolioProps from "@/interfaces/PortfolioProps";
 
-type TradeProps = {
-  updatePortfolio: (tradeTotal: number, action: string) => void;
+interface TradeProps extends PortfolioProps {
   tradeQuoteData: TradeQuoteData[];
-};
+}
 
-const Trade: React.FC<TradeProps> = ({ tradeQuoteData, updatePortfolio }) => {
+const Trade: React.FC<TradeProps> = ({
+  tradeQuoteData,
+  updatePortfolio,
+  portfolio,
+}) => {
   const [tradeFormData, setTradeFormData] = useState({
     ticker: "",
     action: "",
