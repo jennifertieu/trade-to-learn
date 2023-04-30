@@ -1,9 +1,12 @@
 import Head from "next/head";
 import Image from "next/image";
+import PortfolioCard from "@/components/PortfolioCard";
 import { useState, useEffect } from "react";
 import Trade from "@/components/Trade";
 import dynamic from "next/dynamic";
 import { stockData } from "../data/stockDataExample";
+import Portfolio from "@/interfaces/Portfolio";
+import Table from "@/components/Table";
 const SymbolOverviewNoSSR = dynamic(
   () => import("react-ts-tradingview-widgets").then((w) => w.SymbolOverview),
   {
@@ -11,9 +14,8 @@ const SymbolOverviewNoSSR = dynamic(
   }
 );
 
-export default function Home() {
+export default function Home({ portfolio, updatePortfolio }: Portfolio) {
   const [stockDailyData, setStockDailyData] = useState(stockData);
-
   // useEffect(() => {
   //   const fetchData = async() => {
   //     const response = await fetch("/api/open-close");
@@ -31,64 +33,61 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <section className="">
-        <h1 className="text-xl font-bold">Stocks</h1>
+      <section>
+        <h1 className="text-3xl font-bold">Stocks</h1>
         <p className="text-sm text-neutral-500 dark:text-neutral-300">
           Trading Common Stocks
         </p>
       </section>
       <section className="flex flex-col gap-4 mt-4 lg:flex-row">
         <section className="flex flex-col gap-4 grow">
-          <article className="rounded-lg p-4 border border-neutral-400 dark:bg-neutral-800 dark:border-0">
-            <h2 className="text-md">Portfolio</h2>
-            <p className="text-2xl font-semibold mt-2">$10,000</p>
+          <PortfolioCard
+            portfolio={portfolio}
+            updatePortfolio={updatePortfolio}
+          />
+          <article className="p-4 rounded-lg overflow-auto border border-neutral-400 dark:bg-neutral-800 dark:border-0">
+            <h2 className="text-lg font-semibold">Quotes</h2>
+            <Table
+              tableData={stockData}
+              tableColumns={["Name", "Ticker", "Price", "Day Change"]}
+              tableRenderRow={(data) => {
+                if (data === undefined) {
+                  return (
+                    <>
+                      <td colSpan={4}>No data available</td>
+                    </>
+                  );
+                }
+                return (
+                  <>
+                    <td>{data["name"]}</td>
+                    <td>{data["ticker"]}</td>
+                    <td>
+                      {data["price"].toLocaleString("en-US", {
+                        style: "currency",
+                        currency: "USD",
+                      })}
+                    </td>
+                    <td className="text-green-700 dark:text-green-400">
+                      {(100 / 100).toLocaleString("en-US", {
+                        style: "percent",
+                        minimumFractionDigits: 2,
+                      })}
+                    </td>
+                  </>
+                );
+              }}
+            />
           </article>
-          {stockData.length > 0 ? (
-            <article className="p-4 rounded-lg overflow-auto border border-neutral-400 dark:bg-neutral-800 dark:border-0">
-              {/* <h2 className="text-lg font-semibold">Quotes</h2> */}
-              <table className="w-full">
-                <thead className="text-left">
-                  <tr className="h-14 text-sm text-neutral-700 dark:text-neutral-300">
-                    <th className="font-normal">Name</th>
-                    <th className="font-normal">Symbol</th>
-                    <th className="font-normal">Price</th>
-                    <th className="font-normal">Day Change</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {stockData.map((data, index) => (
-                    <tr
-                      className="h-14 border-t border-neutral-600 dark:border-neutral-400"
-                      key={index}
-                    >
-                      <td>
-                        <span className="align-baseline ml-2">
-                          {data["name"]}
-                        </span>
-                      </td>
-                      <td>{data["ticker"]}</td>
-                      <td>
-                        {data["price"].toLocaleString("en-US", {
-                          style: "currency",
-                          currency: "USD",
-                        })}
-                      </td>
-                      <td className="text-green-700 dark:text-green-400">
-                        {(data["day_change"] / 100).toLocaleString("en-US", {
-                          style: "percent",
-                          minimumFractionDigits: 2,
-                        })}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </article>
-          ) : (
-            <div>Loading...</div>
-          )}
         </section>
-        <Trade type="stock" />
+        <Trade
+          updatePortfolio={updatePortfolio}
+          tradeQuoteData={stockData.map(({ name, ticker, price }) => ({
+            name,
+            ticker,
+            price,
+          }))}
+        />
       </section>
     </>
   );
