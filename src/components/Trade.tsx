@@ -38,6 +38,14 @@ const Trade: React.FC<TradeProps> = ({
     const name = tradeQuote?.name;
     const price = tradeQuote?.price ? tradeQuote.price : 0;
     // TODO: If action is to sell, verify the user owns that amount of select assets
+    // Display error in UI
+    if (
+      tradeFormData.action.toUpperCase() === "SELL" &&
+      !getUserHoldings(tradeFormData.ticker)
+    ) {
+      console.log(`User does not have any holdings ${tradeFormData.ticker}`);
+      return false;
+    }
     // TODO: submit form data to database
     transactions.push({
       ...tradeFormData,
@@ -58,7 +66,20 @@ const Trade: React.FC<TradeProps> = ({
     }
   }
 
-  function getUserHoldings() {}
+  function getUserHoldings(assetTicker: string) {
+    // verify if user has holdings in the asset
+    if (portfolio.stocks.length === 0) {
+      return false;
+    }
+
+    for (const item of portfolio.stocks) {
+      console.log(item.ticker);
+      if (item.ticker === assetTicker) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   return (
     <article className="rounded-lg p-6 w-full lg:w-4/12 border border-neutral-400 dark:bg-neutral-800 dark:border-0">
