@@ -6,6 +6,27 @@ import Table from "@/components/Table";
 import PortfolioProps from "@/interfaces/PortfolioProps";
 
 const Portfolio = ({ portfolio, updatePortfolio }: PortfolioProps) => {
+  const transactionColumns = [
+    "Date",
+    "Name",
+    "Ticker",
+    "Price",
+    "Quantity",
+    "Order Type",
+    "Action",
+    "Total",
+  ];
+
+  const holdingsColumns = [
+    "Name",
+    "Ticker",
+    "Current Price",
+    "Purchase Price",
+    "Quantity",
+    "Day Change",
+    "Total Change",
+    "Total Value",
+  ];
   return (
     <>
       <Head>
@@ -26,21 +47,14 @@ const Portfolio = ({ portfolio, updatePortfolio }: PortfolioProps) => {
           <h2 className="text-lg">Holdings</h2>
           <Table
             tableData={portfolioData.stocks}
-            tableColumns={[
-              "Name",
-              "Ticker",
-              "Current Price",
-              "Purchase Price",
-              "Quantity",
-              "Day Change",
-              "Total Change",
-              "Total Value",
-            ]}
+            tableColumns={holdingsColumns}
             tableRenderRow={(data) => {
               if (data === undefined) {
                 return (
                   <>
-                    <td colSpan={7}>No holdings available</td>
+                    <td colSpan={holdingsColumns.length}>
+                      No holdings available
+                    </td>
                   </>
                 );
               }
@@ -89,19 +103,14 @@ const Portfolio = ({ portfolio, updatePortfolio }: PortfolioProps) => {
           <h2 className="text-lg">Trade History</h2>
           <Table
             tableData={transactions}
-            tableColumns={[
-              "Date",
-              "Name",
-              "Ticker",
-              "Price",
-              "Quantity",
-              "Total Value",
-            ]}
+            tableColumns={transactionColumns}
             tableRenderRow={(data) => {
               if (data === undefined) {
                 return (
                   <>
-                    <td colSpan={5}>No transactions available</td>
+                    <td colSpan={transactionColumns.length}>
+                      No transactions available
+                    </td>
                   </>
                 );
               }
@@ -117,6 +126,8 @@ const Portfolio = ({ portfolio, updatePortfolio }: PortfolioProps) => {
                     })}
                   </td>
                   <td>{data["quantity"]}</td>
+                  <td>{data["orderType"]}</td>
+                  <td>{data["action"]}</td>
                   <td>{data["total"]}</td>
                 </>
               );

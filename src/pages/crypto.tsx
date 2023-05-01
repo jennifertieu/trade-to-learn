@@ -8,6 +8,7 @@ import PortfolioProps from "@/interfaces/PortfolioProps";
 
 const Crypto = ({ portfolio, updatePortfolio }: PortfolioProps) => {
   const [cryptoDailyData, setCryptoDailyData] = useState(cryptoData);
+  const cryptoQuoteColumns = ["Name", "Ticker", "Price", "Day Change"];
   // useEffect(() => {
   //   const fetchData = async() => {
   //     const response = await fetch("/api/open-close");
@@ -38,12 +39,14 @@ const Crypto = ({ portfolio, updatePortfolio }: PortfolioProps) => {
             <h2 className="text-lg font-semibold">Quotes</h2>
             <Table
               tableData={cryptoData}
-              tableColumns={["Name", "Ticker", "Price", "Day Change"]}
+              tableColumns={cryptoQuoteColumns}
               tableRenderRow={(data) => {
                 if (data === undefined) {
                   return (
                     <>
-                      <td colSpan={4}>No data available</td>
+                      <td colSpan={cryptoQuoteColumns.length}>
+                        No data available
+                      </td>
                     </>
                   );
                 }

@@ -16,6 +16,8 @@ const SymbolOverviewNoSSR = dynamic(
 
 export default function Home({ portfolio, updatePortfolio }: PortfolioProps) {
   const [stockDailyData, setStockDailyData] = useState(stockData);
+
+  const stockQuoteColumns = ["Name", "Ticker", "Price", "Day Change"];
   // useEffect(() => {
   //   const fetchData = async() => {
   //     const response = await fetch("/api/open-close");
@@ -49,12 +51,14 @@ export default function Home({ portfolio, updatePortfolio }: PortfolioProps) {
             <h2 className="text-lg">Quotes</h2>
             <Table
               tableData={stockData}
-              tableColumns={["Name", "Ticker", "Price", "Day Change"]}
+              tableColumns={stockQuoteColumns}
               tableRenderRow={(data) => {
                 if (data === undefined) {
                   return (
                     <>
-                      <td colSpan={4}>No data available</td>
+                      <td colSpan={stockQuoteColumns.length}>
+                        No data available
+                      </td>
                     </>
                   );
                 }
