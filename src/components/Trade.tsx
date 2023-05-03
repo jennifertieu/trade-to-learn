@@ -1,89 +1,100 @@
 import { useState, useEffect } from "react";
-import { SyntheticEvent } from "react";
 import { transactions } from "@/data/transactionsExample";
 import TradeRequest from "@/interfaces/TradeRequest";
 import TradeQuoteData from "@/interfaces/TradeQuoteData";
-import PortfolioProps from "@/interfaces/PortfolioProps";
+import PortfolioProps from "@/types/PortfolioProps";
+import { useForm, SubmitHandler } from "react-hook-form";
+import { toast } from "react-toastify";
+import { getQuoteDetails } from "@/lib/validateTrade";
 
 interface TradeProps extends PortfolioProps {
   tradeQuoteData: TradeQuoteData[];
 }
 
+type Inputs = {
+  ticker: string;
+  action: string;
+  quantity: number;
+  orderType: string;
+  duration: string;
+};
+
 const Trade: React.FC<TradeProps> = ({
   tradeQuoteData,
-  updatePortfolio,
+  updateCash,
+  updateUserHoldings,
+  getUserHoldings,
   portfolio,
 }) => {
-  const [tradeFormData, setTradeFormData] = useState({
-    ticker: "",
-    action: "",
-    quantity: 0,
-    orderType: "",
-    duration: "",
+  const {
+    register,
+    handleSubmit,
+    watch,
+    reset,
+    setError,
+    formState: { errors },
+  } = useForm<Inputs>({
+    defaultValues: {
+      ticker: "",
+      action: "",
+      quantity: 0,
+      orderType: "Market",
+      duration: "Day",
+    },
   });
+  const quantityInput = watch("quantity");
+  const tickerInput = watch("ticker");
+  const tickerPrice = getQuoteDetails(tickerInput, tradeQuoteData)?.price;
 
-  function handleChange(event: SyntheticEvent) {
-    const { name, value } = event.target as HTMLInputElement;
-    return setTradeFormData((prevFormData) => {
-      return {
-        ...prevFormData,
-        [name]: value,
-      };
-    });
-  }
+  const notify = () => {
+    toast.success("Trade successfully submitted");
+  };
 
-  function handleSubmit(event: SyntheticEvent) {
-    event.preventDefault();
-    const tradeQuote = getTradeDetails(tradeFormData.ticker);
+  const onSubmit: SubmitHandler<Inputs> = (data) => {
+    const tradeQuote = getQuoteDetails(data.ticker, tradeQuoteData);
     const name = tradeQuote?.name;
     const price = tradeQuote?.price ? tradeQuote.price : 0;
-    // TODO: If action is to sell, verify the user owns that amount of select assets
-    // Display error in UI
+    const totalPrice = data.quantity * price;
+
     if (
-      tradeFormData.action.toUpperCase() === "SELL" &&
-      !getUserHoldings(tradeFormData.ticker)
+      data.action.toUpperCase() === "SELL" &&
+      !getUserHoldings(data.ticker, data.quantity)
     ) {
-      console.log(`User does not have any holdings ${tradeFormData.ticker}`);
+      setError("quantity", {
+        type: "assets",
+        message: "You do not have any or an insufficient amount to sell",
+      });
       return false;
     }
-    // TODO: submit form data to database
+
+    if (data.action.toUpperCase() === "BUY" && totalPrice > portfolio.cash) {
+      setError("quantity", {
+        type: "cash",
+        message: "You do not have enough cash to buy",
+      });
+      return false;
+    }
+
     transactions.push({
-      ...tradeFormData,
+      ...data,
       name,
-      total: tradeFormData.quantity * price,
+      total: totalPrice,
       date: new Date().toISOString(),
       price,
     } as TradeRequest);
-    // update portfolio
-    updatePortfolio(tradeFormData.quantity * price, tradeFormData.action);
-  }
 
-  function getTradeDetails(ticker: string) {
-    for (const quoteData of tradeQuoteData) {
-      if (quoteData.ticker === ticker) {
-        return quoteData;
-      }
-    }
-  }
+    updateUserHoldings(data.ticker, data.quantity, data.action);
 
-  function getUserHoldings(assetTicker: string) {
-    // verify if user has holdings in the asset
-    if (portfolio.stocks.length === 0) {
-      return false;
-    }
+    updateCash(data.quantity * price, data.action);
 
-    for (const item of portfolio.stocks) {
-      console.log(item.ticker);
-      if (item.ticker === assetTicker) {
-        return true;
-      }
-    }
-    return false;
-  }
+    notify();
+
+    reset();
+  };
 
   return (
     <article className="rounded-lg p-6 w-full lg:w-4/12 border border-neutral-400 dark:bg-neutral-800 dark:border-0">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <h2 className="text-lg">Trade</h2>
         <div className="mt-6">
           <label className="block" htmlFor="ticker">
@@ -91,10 +102,8 @@ const Trade: React.FC<TradeProps> = ({
           </label>
           <select
             className="rounded-lg w-full p-2"
-            name="ticker"
-            value={tradeFormData.ticker}
-            onChange={handleChange}
-            required
+            id="ticker"
+            {...register("ticker", { required: "This field is required" })}
           >
             <option value="">Please select an asset</option>
             {tradeQuoteData.map((data, index) => (
@@ -103,6 +112,9 @@ const Trade: React.FC<TradeProps> = ({
               </option>
             ))}
           </select>
+          <div className="mt-1 text-red-600 dark:text-red-400">
+            {errors.ticker?.message}
+          </div>
         </div>
         <div className="mt-6">
           <label className="block" htmlFor="action">
@@ -110,15 +122,16 @@ const Trade: React.FC<TradeProps> = ({
           </label>
           <select
             className="rounded-lg w-full p-2"
-            name="action"
-            value={tradeFormData.action}
-            onChange={handleChange}
-            required
+            id="action"
+            {...register("action", { required: "This field is required" })}
           >
             <option value="">Please choose an action</option>
             <option value="Buy">Buy</option>
             <option value="Sell">Sell</option>
           </select>
+          <div className="mt-1 text-red-600 dark:text-red-400">
+            {errors.action?.message}
+          </div>
         </div>
         <div className="mt-6">
           <label className="block" htmlFor="quantity">
@@ -126,13 +139,37 @@ const Trade: React.FC<TradeProps> = ({
           </label>
           <input
             className="rounded-lg w-full p-2"
+            id="quantity"
             type="number"
-            name="quantity"
-            value={tradeFormData.quantity}
-            onChange={handleChange}
-            required
             min={0}
+            {...register("quantity", {
+              required: "This field is required",
+              min: { value: 1, message: "Quantity must be greater than 0" },
+            })}
           />
+          {quantityInput > 0 && tickerPrice ? (
+            <div className="mt-1 text-sm text-sky-700 dark:text-sky-300">
+              Estimated total price:{" "}
+              {(quantityInput * tickerPrice).toLocaleString("en-US", {
+                style: "currency",
+                currency: "USD",
+              })}
+            </div>
+          ) : (
+            ""
+          )}
+          <div className="mt-1 text-red-600 dark:text-red-400">
+            {errors.quantity?.type === "required" && errors.quantity?.message}
+          </div>
+          <div className="mt-1 text-red-600 dark:text-red-400">
+            {errors.quantity?.type === "min" && errors.quantity?.message}
+          </div>
+          <div className="mt-1 text-red-600 dark:text-red-400">
+            {errors.quantity?.type === "assets" && errors.quantity?.message}
+          </div>
+          <div className="mt-1 text-red-600 dark:text-red-400">
+            {errors.quantity?.type === "cash" && errors.quantity?.message}
+          </div>
         </div>
         <div className="mt-6">
           <label className="block" htmlFor="orderType">
@@ -140,10 +177,8 @@ const Trade: React.FC<TradeProps> = ({
           </label>
           <select
             className="rounded-lg w-full p-2"
-            name="orderType"
-            value={tradeFormData.orderType}
-            onChange={handleChange}
-            required
+            id="orderType"
+            {...register("orderType", { required: "This field is required" })}
           >
             <option value="Market">Market</option>
             <option value="Limit">Limit</option>
@@ -155,10 +190,8 @@ const Trade: React.FC<TradeProps> = ({
           </label>
           <select
             className="rounded-lg w-full p-2"
-            name="duration"
-            value={tradeFormData.duration}
-            onChange={handleChange}
-            required
+            id="duration"
+            {...register("duration", { required: "This field is required" })}
           >
             <option value="Day">Day</option>
             <option value="Until Cancelled">Until Cancelled</option>
