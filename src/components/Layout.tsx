@@ -1,27 +1,15 @@
 import Navbar from "./Navbar";
 import Footer from "./Footer";
-import React, { ReactElement, ReactNode, useState } from "react";
-import { portfolioData } from "@/data/portfolioDataExample";
+import React, { ReactElement, ReactNode } from "react";
+import usePortfolio from "@/hooks/usePortfolio";
 
 type LayoutProps = {
   children: ReactNode;
 };
 
 const Layout = ({ children }: LayoutProps) => {
-  const [portfolio, setPortfolio] = useState(portfolioData);
-
-  function updatePortfolio(tradeTotal: number, action: string) {
-    return setPortfolio((prevPortfolio) => {
-      const cashTotal =
-        action.toUpperCase() === "BUY"
-          ? prevPortfolio.cash - tradeTotal
-          : prevPortfolio.cash + tradeTotal;
-      return {
-        ...prevPortfolio,
-        cash: cashTotal,
-      };
-    });
-  }
+  const { portfolio, updateCash, updateUserHoldings, getUserHoldings } =
+    usePortfolio();
 
   return (
     <div className="flex flex-col items-stretch min-h-full">
@@ -30,7 +18,9 @@ const Layout = ({ children }: LayoutProps) => {
         {React.Children.map(children, (child) => {
           return React.cloneElement(child as ReactElement, {
             portfolio,
-            updatePortfolio,
+            updateCash,
+            updateUserHoldings,
+            getUserHoldings,
           });
         })}
       </main>
