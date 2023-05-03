@@ -4,9 +4,11 @@ import PortfolioCard from "@/components/PortfolioCard";
 import { useState, useEffect } from "react";
 import Trade from "@/components/Trade";
 import dynamic from "next/dynamic";
-import { stockData } from "../data/stockDataExample";
-import PortfolioProps from "@/interfaces/PortfolioProps";
+import PortfolioProps from "@/types/PortfolioProps";
 import Table from "@/components/Table";
+import StockQuote from "@/interfaces/StockQuote";
+import StockDataQuote from "@/interfaces/StockDataQuote";
+import { stockData } from "@/data/stockDataExample";
 const SymbolOverviewNoSSR = dynamic(
   () => import("react-ts-tradingview-widgets").then((w) => w.SymbolOverview),
   {
@@ -14,18 +16,43 @@ const SymbolOverviewNoSSR = dynamic(
   }
 );
 
-export default function Home({ portfolio, updatePortfolio }: PortfolioProps) {
+export default function Home({
+  portfolio,
+  updateCash,
+  updateUserHoldings,
+  getUserHoldings,
+}: PortfolioProps) {
   const [stockDailyData, setStockDailyData] = useState(stockData);
-
+  const [currentDateTime, setCurrentDateTime] = useState("");
+  const [stockDataSource, setStockDataSource] = useState("StockData Free Plan");
   const stockQuoteColumns = ["Name", "Ticker", "Price", "Day Change"];
-  // useEffect(() => {
-  //   const fetchData = async() => {
-  //     const response = await fetch("/api/open-close");
-  //     const data = await response.json();
-  //     setStockDailyData(data);
-  //   }
-  //   fetchData();
-  // }, [])
+
+  useEffect(() => {
+    const fetchStockData = async () => {
+      try {
+        const response = await fetch("/api/stock-quote");
+        const stockData: StockDataQuote = await response.json();
+        if (stockData.error) throw stockData.error;
+        setStockDailyData(stockData.data as StockQuote[]);
+      } catch (ex) {
+        setStockDataSource("Database, StockData API Limit Exceeded :(");
+        throw ex;
+      }
+    };
+
+    const getQuoteData = async () => {
+      try {
+        await fetchStockData();
+      } catch (ex) {
+        console.log(ex);
+        // TODO: update database, use as fallback if the API free plan maxes out
+      }
+    };
+
+    getQuoteData();
+
+    setCurrentDateTime(new Date().toLocaleString());
+  }, []);
 
   return (
     <>
@@ -36,7 +63,7 @@ export default function Home({ portfolio, updatePortfolio }: PortfolioProps) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <section>
-        <h1 className="text-3xl font-bold">Stocks</h1>
+        <h1 className="text-3xl font-bold">Trade</h1>
         <p className="text-sm text-neutral-500 dark:text-neutral-300">
           Trading Common Stocks
         </p>
@@ -45,12 +72,14 @@ export default function Home({ portfolio, updatePortfolio }: PortfolioProps) {
         <section className="flex flex-col gap-4 grow">
           <PortfolioCard
             portfolio={portfolio}
-            updatePortfolio={updatePortfolio}
+            updateCash={updateCash}
+            updateUserHoldings={updateUserHoldings}
+            getUserHoldings={getUserHoldings}
           />
-          <article className="p-4 rounded-lg overflow-auto border border-neutral-400 dark:bg-neutral-800 dark:border-0">
+          <article className="p-4 rounded-lg overflow-auto lg:overflow-visible border border-neutral-400 dark:bg-neutral-800 dark:border-0">
             <h2 className="text-lg">Quotes</h2>
             <Table
-              tableData={stockData}
+              tableData={stockDailyData}
               tableColumns={stockQuoteColumns}
               tableRenderRow={(data) => {
                 if (data === undefined) {
@@ -73,21 +102,27 @@ export default function Home({ portfolio, updatePortfolio }: PortfolioProps) {
                       })}
                     </td>
                     <td className="text-green-700 dark:text-green-400">
-                      {(100 / 100).toLocaleString("en-US", {
-                        style: "percent",
+                      {data["day_change"].toLocaleString("en-US", {
                         minimumFractionDigits: 2,
                       })}
+                      %
                     </td>
                   </>
                 );
               }}
             />
+            <div className="flex justify-between text-neutral-800 dark:text-neutral-400">
+              <small className="">Last updated at {currentDateTime}</small>
+              <small className="">Sourced from {stockDataSource}</small>
+            </div>
           </article>
         </section>
         <Trade
           portfolio={portfolio}
-          updatePortfolio={updatePortfolio}
-          tradeQuoteData={stockData.map(({ name, ticker, price }) => ({
+          updateCash={updateCash}
+          updateUserHoldings={updateUserHoldings}
+          getUserHoldings={getUserHoldings}
+          tradeQuoteData={stockDailyData.map(({ name, ticker, price }) => ({
             name,
             ticker,
             price,
