@@ -8,9 +8,13 @@ const Navbar = () => {
           <Link href="/">Trade To Learn</Link>
         </div>
         <ul className="flex gap-4">
-          <li><Link href="/portfolio">Portfolio</Link></li>
-          <li><Link href="/">Stocks</Link></li>
-          <li><Link href="/crypto">Crypto</Link></li>
+          <li>
+            <Link href="/">Trade</Link>
+          </li>
+          <li>
+            <Link href="/portfolio">Portfolio</Link>
+          </li>
+          {/* <li><Link href="/crypto">Crypto</Link></li> */}
           {/* <li>Log In</li> */}
         </ul>
       </nav>
