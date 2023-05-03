@@ -6,7 +6,11 @@ type TableProps<T> = {
   tableRenderRow: (item?: T) => ReactNode;
 };
 
-const Table = <T,>({ tableData, tableColumns, tableRenderRow }: TableProps<T>) => {
+const Table = <T,>({
+  tableData,
+  tableColumns,
+  tableRenderRow,
+}: TableProps<T>) => {
   return (
     <table className="w-full">
       <thead className="text-left">
@@ -14,6 +18,12 @@ const Table = <T,>({ tableData, tableColumns, tableRenderRow }: TableProps<T>) =
           {tableColumns.map((name, index) => (
             <th className="font-normal" key={index}>
               {name}
+              <button className="info-button text-indigo-700 dark:text-indigo-300 ms-1">
+                i
+                <div className="info-box">
+                  This is a test information box about the table columns logic.
+                </div>
+              </button>
             </th>
           ))}
         </tr>
@@ -29,9 +39,7 @@ const Table = <T,>({ tableData, tableColumns, tableRenderRow }: TableProps<T>) =
             </tr>
           ))
         ) : (
-          <tr
-            className="h-14 border-t border-neutral-600 dark:border-neutral-400 text-center"
-          >
+          <tr className="h-14 border-t border-neutral-600 dark:border-neutral-400 text-center">
             {tableRenderRow()}
           </tr>
         )}
