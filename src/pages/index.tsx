@@ -24,32 +24,30 @@ export default function Home({
 }: PortfolioProps) {
   const [stockDailyData, setStockDailyData] = useState(stockData);
   const [currentDateTime, setCurrentDateTime] = useState("");
-  const [stockDataSource, setStockDataSource] = useState("StockData Free Plan");
   const stockQuoteColumns = ["Name", "Ticker", "Price", "Day Change"];
 
   useEffect(() => {
-    const fetchStockData = async () => {
-      try {
-        const response = await fetch("/api/stock-quote");
-        const stockData: StockDataQuote = await response.json();
-        if (stockData.error) throw stockData.error;
-        setStockDailyData(stockData.data as StockQuote[]);
-      } catch (ex) {
-        setStockDataSource("Database, StockData API Limit Exceeded :(");
-        throw ex;
-      }
-    };
+    // const fetchStockData = async () => {
+    //   try {
+    //     const response = await fetch("/api/stock-quote");
+    //     const stockData: StockDataQuote = await response.json();
+    //     if (stockData.error) throw stockData.error;
+    //     setStockDailyData(stockData.data as StockQuote[]);
+    //   } catch (ex) {
+    //     throw ex;
+    //   }
+    // };
 
-    const getQuoteData = async () => {
-      try {
-        await fetchStockData();
-      } catch (ex) {
-        console.log(ex);
-        // TODO: update database, use as fallback if the API free plan maxes out
-      }
-    };
+    // const getQuoteData = async () => {
+    //   try {
+    //     await fetchStockData();
+    //   } catch (ex) {
+    //     console.log(ex);
+    //     // TODO: update database, use as fallback if the API free plan maxes out
+    //   }
+    // };
 
-    getQuoteData();
+    // getQuoteData();
 
     setCurrentDateTime(new Date().toLocaleString());
   }, []);
@@ -101,7 +99,13 @@ export default function Home({
                         currency: "USD",
                       })}
                     </td>
-                    <td className="text-green-700 dark:text-green-400">
+                    <td
+                      className={
+                        data["day_change"] < 0
+                          ? "text-red-700 dark:text-red-400"
+                          : "text-green-700 dark:text-green-400"
+                      }
+                    >
                       {data["day_change"].toLocaleString("en-US", {
                         minimumFractionDigits: 2,
                       })}
@@ -113,7 +117,6 @@ export default function Home({
             />
             <div className="flex justify-between text-neutral-800 dark:text-neutral-400">
               <small className="">Last updated at {currentDateTime}</small>
-              <small className="">Sourced from {stockDataSource}</small>
             </div>
           </article>
         </section>
