@@ -1,11 +1,9 @@
-import PortfolioProps from "@/types/PortfolioProps";
+import Portfolio from "@/interfaces/Portfolio";
+import { useContext } from "react";
+import { PortfolioContext } from "@/context/PortfolioContext";
 
-const PortfolioCard = ({
-  portfolio,
-  updateCash,
-  updateUserHoldings,
-  getUserHoldings,
-}: PortfolioProps) => {
+const PortfolioCard = () => {
+  const { portfolio } = useContext(PortfolioContext);
   return (
     <article className="p-4 rounded-lg border border-neutral-400 dark:bg-neutral-800 dark:border-0">
       <div className="flex">

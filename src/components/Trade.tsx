@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useContext } from "react";
 import { transactions } from "@/data/transactionsExample";
 import TradeRequest from "@/interfaces/TradeRequest";
 import TradeQuoteData from "@/interfaces/TradeQuoteData";
@@ -6,8 +6,9 @@ import PortfolioProps from "@/types/PortfolioProps";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { toast } from "react-toastify";
 import { getQuoteDetails } from "@/lib/validateTrade";
+import { PortfolioContext } from "@/context/PortfolioContext";
 
-interface TradeProps extends PortfolioProps {
+interface TradeProps {
   tradeQuoteData: TradeQuoteData[];
 }
 
@@ -19,13 +20,7 @@ type Inputs = {
   duration: string;
 };
 
-const Trade: React.FC<TradeProps> = ({
-  tradeQuoteData,
-  updateCash,
-  updateUserHoldings,
-  getUserHoldings,
-  portfolio,
-}) => {
+const Trade: React.FC<TradeProps> = ({ tradeQuoteData }) => {
   const {
     register,
     handleSubmit,
@@ -45,6 +40,8 @@ const Trade: React.FC<TradeProps> = ({
   const quantityInput = watch("quantity");
   const tickerInput = watch("ticker");
   const tickerPrice = getQuoteDetails(tickerInput, tradeQuoteData)?.price;
+  const { portfolio, updateCash, updateUserHoldings, getUserHoldings } =
+    useContext(PortfolioContext);
 
   const notify = () => {
     toast.success("Trade successfully submitted");

@@ -3,9 +3,14 @@ import PortfolioCard from "@/components/PortfolioCard";
 import { portfolioData } from "@/data/portfolioDataExample";
 import Head from "next/head";
 import Table from "@/components/Table";
-import PortfolioProps from "@/interfaces/PortfolioProps";
+import PortfolioProps from "@/types/PortfolioProps";
+import { useState, useEffect, useContext } from "react";
+import { stockData } from "@/data/stockDataExample";
+import StockDataQuote from "@/interfaces/StockDataQuote";
+import StockQuote from "@/interfaces/StockQuote";
+import { PortfolioContext } from "@/context/PortfolioContext";
 
-const Portfolio = ({ portfolio, updatePortfolio }: PortfolioProps) => {
+const Portfolio = () => {
   const transactionColumns = [
     "Date",
     "Name",
@@ -27,6 +32,48 @@ const Portfolio = ({ portfolio, updatePortfolio }: PortfolioProps) => {
     "Total Change",
     "Total Value",
   ];
+
+  const [stockDailyData, setStockDailyData] = useState(stockData);
+  const [currentDateTime, setCurrentDateTime] = useState("");
+  const [stockDataSource, setStockDataSource] = useState("StockData API");
+  const { portfolio } = useContext(PortfolioContext);
+
+  useEffect(() => {
+    // const fetchStockData = async () => {
+    //   try {
+    //     const response = await fetch("/api/stock-quote");
+    //     const stockData: StockDataQuote = await response.json();
+    //     if (stockData.error) throw stockData.error;
+    //     setStockDailyData(stockData.data as StockQuote[]);
+    //   } catch (ex) {
+    //     setStockDataSource("Database, StockData API Limit Exceeded :(");
+    //     throw ex;
+    //   }
+    // };
+
+    // const getQuoteData = async () => {
+    //   try {
+    //     await fetchStockData();
+    //   } catch (ex) {
+    //     console.log(ex);
+    //     // TODO: update database, use as fallback if the API free plan maxes out
+    //   }
+    // };
+
+    // getQuoteData();
+
+    setCurrentDateTime(new Date().toLocaleString());
+  }, []);
+
+  function getCurrentPrice(ticker: string) {
+    for (const item of stockDailyData) {
+      if (item.ticker === ticker) {
+        return item.price;
+      }
+    }
+    return 0;
+  }
+
   return (
     <>
       <Head>
@@ -39,11 +86,8 @@ const Portfolio = ({ portfolio, updatePortfolio }: PortfolioProps) => {
         </p>
       </section>
       <section className="flex flex-col gap-4 mt-4">
-        <PortfolioCard
-          portfolio={portfolio}
-          updatePortfolio={updatePortfolio}
-        />
-        <article className="p-4 rounded-lg overflow-auto border border-neutral-400 dark:bg-neutral-800 dark:border-0">
+        <PortfolioCard />
+        <article className="p-4 rounded-lg overflow-auto md:overflow-visible border border-neutral-400 dark:bg-neutral-800 dark:border-0">
           <h2 className="text-lg">Holdings</h2>
           <Table
             tableData={portfolioData.stocks}
@@ -59,12 +103,14 @@ const Portfolio = ({ portfolio, updatePortfolio }: PortfolioProps) => {
                 );
               }
 
+              const currentPrice = getCurrentPrice(data["ticker"]);
+
               return (
                 <>
                   <td>{data["name"]}</td>
                   <td>{data["ticker"]}</td>
                   <td>
-                    {(data["current_price"] as number).toLocaleString("en-US", {
+                    {(currentPrice as number).toLocaleString("en-US", {
                       style: "currency",
                       currency: "USD",
                       minimumFractionDigits: 2,
@@ -82,10 +128,13 @@ const Portfolio = ({ portfolio, updatePortfolio }: PortfolioProps) => {
                   </td>
                   <td>{data["quantity"]}</td>
                   <td className="text-green-700 dark:text-green-400">
-                    {(100 / 100).toLocaleString("en-US", {
-                      style: "percent",
+                    {(
+                      (currentPrice - data["purchase_price"]) /
+                      data["purchase_price"]
+                    ).toLocaleString("en-US", {
                       minimumFractionDigits: 2,
                     })}
+                    %
                   </td>
                   <td className="text-green-700 dark:text-green-400">
                     {(100 / 100).toLocaleString("en-US", {
@@ -93,13 +142,18 @@ const Portfolio = ({ portfolio, updatePortfolio }: PortfolioProps) => {
                       minimumFractionDigits: 2,
                     })}
                   </td>
-                  <td>{data["total"]}</td>
+                  <td>
+                    {(data["quantity"] * currentPrice).toLocaleString("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                    })}
+                  </td>
                 </>
               );
             }}
           />
         </article>
-        <article className="p-4 rounded-lg overflow-auto border border-neutral-400 dark:bg-neutral-800 dark:border-0">
+        <article className="p-4 rounded-lg overflow-auto md:overflow-visible border border-neutral-400 dark:bg-neutral-800 dark:border-0">
           <h2 className="text-lg">Trade History</h2>
           <Table
             tableData={transactions}
@@ -116,7 +170,7 @@ const Portfolio = ({ portfolio, updatePortfolio }: PortfolioProps) => {
               }
               return (
                 <>
-                  <td>{data["date"]}</td>
+                  <td>{new Date(data["date"]).toUTCString()}</td>
                   <td>{data["name"]}</td>
                   <td>{data["ticker"]}</td>
                   <td>
@@ -128,7 +182,12 @@ const Portfolio = ({ portfolio, updatePortfolio }: PortfolioProps) => {
                   <td>{data["quantity"]}</td>
                   <td>{data["orderType"]}</td>
                   <td>{data["action"]}</td>
-                  <td>{data["total"]}</td>
+                  <td>
+                    {data["total"].toLocaleString("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                    })}
+                  </td>
                 </>
               );
             }}

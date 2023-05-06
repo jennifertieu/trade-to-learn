@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Image from "next/image";
 import PortfolioCard from "@/components/PortfolioCard";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import Trade from "@/components/Trade";
 import dynamic from "next/dynamic";
 import PortfolioProps from "@/types/PortfolioProps";
@@ -16,12 +16,7 @@ const SymbolOverviewNoSSR = dynamic(
   }
 );
 
-export default function Home({
-  portfolio,
-  updateCash,
-  updateUserHoldings,
-  getUserHoldings,
-}: PortfolioProps) {
+export default function Home() {
   const [stockDailyData, setStockDailyData] = useState(stockData);
   const [currentDateTime, setCurrentDateTime] = useState("");
   const stockQuoteColumns = ["Name", "Ticker", "Price", "Day Change"];
@@ -68,12 +63,7 @@ export default function Home({
       </section>
       <section className="flex flex-col gap-4 mt-4 lg:flex-row">
         <section className="flex flex-col gap-4 grow">
-          <PortfolioCard
-            portfolio={portfolio}
-            updateCash={updateCash}
-            updateUserHoldings={updateUserHoldings}
-            getUserHoldings={getUserHoldings}
-          />
+          <PortfolioCard />
           <article className="p-4 rounded-lg overflow-auto lg:overflow-visible border border-neutral-400 dark:bg-neutral-800 dark:border-0">
             <h2 className="text-lg">Quotes</h2>
             <Table
@@ -121,10 +111,6 @@ export default function Home({
           </article>
         </section>
         <Trade
-          portfolio={portfolio}
-          updateCash={updateCash}
-          updateUserHoldings={updateUserHoldings}
-          getUserHoldings={getUserHoldings}
           tradeQuoteData={stockDailyData.map(({ name, ticker, price }) => ({
             name,
             ticker,
