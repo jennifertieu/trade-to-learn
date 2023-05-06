@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { portfolioData } from "@/data/portfolioDataExample";
 import PortfolioProps from "@/types/PortfolioProps";
-import Holdings from "@/types/Holdings";
 
 export default function usePortfolio(): PortfolioProps {
   const [portfolio, setPortfolio] = useState(portfolioData);
@@ -29,10 +28,8 @@ export default function usePortfolio(): PortfolioProps {
         prevPortfolio.stocks.push({
           name: "",
           ticker: ticker,
-          current_price: 0,
           purchase_price: 0,
           quantity: quantity,
-          total: 0,
         });
 
         return {
