@@ -1,4 +1,5 @@
 import React, { ReactNode } from "react";
+import InfoTip from "./InfoTip";
 
 type TableProps<T> = {
   tableData: T[];
@@ -18,12 +19,7 @@ const Table = <T,>({
           {tableColumns.map((name, index) => (
             <th className="font-normal" key={index}>
               {name}
-              <button className="info-button text-indigo-700 dark:text-indigo-300 ms-1">
-                i
-                <div className="info-box">
-                  This is a test information box about the table columns logic.
-                </div>
-              </button>
+              <InfoTip />
             </th>
           ))}
         </tr>
