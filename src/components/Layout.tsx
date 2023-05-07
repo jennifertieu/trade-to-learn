@@ -1,6 +1,6 @@
 import Navbar from "./Navbar";
 import Footer from "./Footer";
-import React, { ReactElement, ReactNode, useState } from "react";
+import React, { ReactNode } from "react";
 import { PortfolioContextProvider } from "@/context/PortfolioContext";
 
 type LayoutProps = {
