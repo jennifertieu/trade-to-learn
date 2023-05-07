@@ -102,6 +102,9 @@ const Portfolio = () => {
               }
 
               const currentPrice = getCurrentPrice(data["ticker"]);
+              const totalChange =
+                currentPrice * data["quantity"] -
+                data["purchase_price"] * data["quantity"];
 
               return (
                 <>
@@ -134,8 +137,14 @@ const Portfolio = () => {
                     })}
                     %
                   </td>
-                  <td className="text-green-700 dark:text-green-400">
-                    {(100 / 100).toLocaleString("en-US", {
+                  <td
+                    className={
+                      totalChange < 0
+                        ? "text-red-700 dark:text-red-400"
+                        : "text-green-700 dark:text-green-400"
+                    }
+                  >
+                    {totalChange.toLocaleString("en-US", {
                       style: "percent",
                       minimumFractionDigits: 2,
                     })}
