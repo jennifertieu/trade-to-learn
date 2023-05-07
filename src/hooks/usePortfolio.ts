@@ -24,15 +24,19 @@ export default function usePortfolio(
 
   function updateUserHoldings(
     ticker: string,
+    name: string | undefined,
     quantity: number,
     action: string
   ) {
     return setPortfolio((prevPortfolio) => {
       if (!getUserHoldings(ticker, quantity)) {
+        const initialPurchasePrice = portfolio.transactions.filter(
+          (item) => item.ticker === ticker
+        )[0].price;
         prevPortfolio.stocks.push({
-          name: "",
+          name: name ? name : "",
           ticker: ticker,
-          purchase_price: 0,
+          purchase_price: initialPurchasePrice,
           quantity: quantity,
         });
 
@@ -53,8 +57,10 @@ export default function usePortfolio(
               ...prevPortfolio,
             };
           }
+          item.purchase_price = calculateAveragePrice(ticker);
         }
       }
+
       return {
         ...prevPortfolio,
       };
@@ -68,6 +74,18 @@ export default function usePortfolio(
       }
     }
     return false;
+  }
+
+  function calculateAveragePrice(ticker: string) {
+    const filterPortfolio = portfolio.transactions.filter(
+      (item) => item.ticker === ticker
+    );
+    const prices = filterPortfolio.map((item) => item.price);
+    const sumPrices = prices.reduce(
+      (accumulator, currentValue) => accumulator + currentValue,
+      0
+    );
+    return sumPrices / prices.length;
   }
 
   return { portfolio, updateCash, updateUserHoldings, getUserHoldings };

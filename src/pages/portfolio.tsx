@@ -1,9 +1,7 @@
-import { transactions } from "@/data/transactionsExample";
 import PortfolioCard from "@/components/PortfolioCard";
 import { portfolioData } from "@/data/portfolioDataExample";
 import Head from "next/head";
 import Table from "@/components/Table";
-import PortfolioProps from "@/types/PortfolioProps";
 import { useState, useEffect, useContext } from "react";
 import { stockData } from "@/data/stockDataExample";
 import StockDataQuote from "@/interfaces/StockDataQuote";
@@ -156,7 +154,7 @@ const Portfolio = () => {
         <article className="p-4 rounded-lg overflow-auto md:overflow-visible border border-neutral-400 dark:bg-neutral-800 dark:border-0">
           <h2 className="text-lg">Trade History</h2>
           <Table
-            tableData={transactions}
+            tableData={portfolio.transactions}
             tableColumns={transactionColumns}
             tableRenderRow={(data) => {
               if (data === undefined) {
@@ -177,6 +175,7 @@ const Portfolio = () => {
                     {(data["price"] as number).toLocaleString("en-US", {
                       style: "currency",
                       currency: "USD",
+                      minimumFractionDigits: 2,
                     })}
                   </td>
                   <td>{data["quantity"]}</td>
@@ -186,6 +185,7 @@ const Portfolio = () => {
                     {data["total"].toLocaleString("en-US", {
                       style: "currency",
                       currency: "USD",
+                      minimumFractionDigits: 2,
                     })}
                   </td>
                 </>

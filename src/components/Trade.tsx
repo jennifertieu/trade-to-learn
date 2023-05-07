@@ -1,8 +1,6 @@
 import { useContext } from "react";
-import { transactions } from "@/data/transactionsExample";
 import TradeRequest from "@/interfaces/TradeRequest";
 import TradeQuoteData from "@/interfaces/TradeQuoteData";
-import PortfolioProps from "@/types/PortfolioProps";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { toast } from "react-toastify";
 import { getQuoteDetails } from "@/lib/validateTrade";
@@ -72,7 +70,7 @@ const Trade: React.FC<TradeProps> = ({ tradeQuoteData }) => {
       return false;
     }
 
-    transactions.push({
+    portfolio.transactions.push({
       ...data,
       name,
       total: totalPrice,
@@ -80,7 +78,7 @@ const Trade: React.FC<TradeProps> = ({ tradeQuoteData }) => {
       price,
     } as TradeRequest);
 
-    updateUserHoldings(data.ticker, data.quantity, data.action);
+    updateUserHoldings(data.ticker, name, data.quantity, data.action);
 
     updateCash(data.quantity * price, data.action);
 
