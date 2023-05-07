@@ -4,7 +4,6 @@ import PortfolioCard from "@/components/PortfolioCard";
 import { useState, useEffect, useContext } from "react";
 import Trade from "@/components/Trade";
 import dynamic from "next/dynamic";
-import PortfolioProps from "@/types/PortfolioProps";
 import Table from "@/components/Table";
 import StockQuote from "@/interfaces/StockQuote";
 import StockDataQuote from "@/interfaces/StockDataQuote";

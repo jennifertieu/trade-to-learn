@@ -1,9 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { portfolioData } from "@/data/portfolioDataExample";
-import PortfolioProps from "@/types/PortfolioProps";
+import PortfolioHook from "@/types/PortfolioHook";
 
-export default function usePortfolio(): PortfolioProps {
-  const [portfolio, setPortfolio] = useState(portfolioData);
+export default function usePortfolio(
+  defaultPortfolioData = portfolioData
+): PortfolioHook {
+  const [portfolio, setPortfolio] = useState(defaultPortfolioData);
+
+  // TODO: set portfolio data from database if the use is logged in
 
   function updateCash(tradeTotal: number, action: string) {
     return setPortfolio((prevPortfolio) => {

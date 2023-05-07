@@ -1,6 +1,6 @@
-import Portfolio from "../interfaces/Portfolio";
+import Portfolio from "@/interfaces/Portfolio";
 
-type PortfolioProps = {
+type PortfolioHook = {
   portfolio: Portfolio;
   updateCash: (tradeTotal: number, action: string) => void;
   updateUserHoldings: (
@@ -11,4 +11,4 @@ type PortfolioProps = {
   getUserHoldings: (ticker: string, quantity: number) => boolean;
 };
 
-export default PortfolioProps;
+export default PortfolioHook;

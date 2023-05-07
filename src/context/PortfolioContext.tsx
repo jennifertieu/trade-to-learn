@@ -1,8 +1,18 @@
 import { createContext, ReactNode } from "react";
 import usePortfolio from "@/hooks/usePortfolio";
-import PortfolioProps from "@/types/PortfolioProps";
+import PortfolioHook from "@/types/PortfolioHook";
+import { portfolioData } from "@/data/portfolioDataExample";
 
-export const PortfolioContext = createContext<PortfolioProps>(null);
+const PortfolioContextDefault = {
+  portfolio: portfolioData,
+  updateCash: () => null,
+  updateUserHoldings: () => null,
+  getUserHoldings: () => false,
+};
+
+export const PortfolioContext = createContext<PortfolioHook>(
+  PortfolioContextDefault
+);
 
 export function PortfolioContextProvider({
   children,
