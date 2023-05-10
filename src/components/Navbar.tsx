@@ -1,12 +1,22 @@
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { Raleway } from "next/font/google";
+
+const raleway = Raleway({
+  weight: ["400", "700"],
+  style: ["normal", "italic"],
+  subsets: ["latin"],
+  display: "swap",
+});
 
 const Navbar = () => {
   const { data: session } = useSession();
   return (
-    <header className="p-4 border-b border-neutral-600 dark:border-neutral-400 shrink-0">
+    <header className="p-4 shrink-0">
       <nav className="flex">
-        <div className="mr-auto text-lg">
+        <div
+          className={`mr-auto text-lg font-bold uppercase ${raleway.className}`}
+        >
           <Link href="/">Trade To Learn</Link>
         </div>
         <ul className="flex gap-4">
