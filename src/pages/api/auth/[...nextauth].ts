@@ -10,6 +10,10 @@ export const authOptions = {
     }),
     // ...add more providers here
   ],
+  pages: {
+    signIn: "/auth/signin",
+    // error: "/auth/error",
+  },
 };
 
 export default NextAuth(authOptions);

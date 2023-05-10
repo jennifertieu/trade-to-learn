@@ -8,7 +8,7 @@ import StockDataQuote from "@/interfaces/StockDataQuote";
 import StockQuote from "@/interfaces/StockQuote";
 import { PortfolioContext } from "@/context/PortfolioContext";
 
-const Portfolio = () => {
+export default function Portfolio() {
   const transactionColumns = [
     "Date",
     "Name",
@@ -205,6 +205,6 @@ const Portfolio = () => {
       </section>
     </>
   );
-};
+}
 
-export default Portfolio;
+Portfolio.auth = true;
