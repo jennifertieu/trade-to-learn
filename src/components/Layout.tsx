@@ -9,9 +9,9 @@ type LayoutProps = {
 
 const Layout = ({ children }: LayoutProps) => {
   return (
-    <div className="flex flex-col items-stretch min-h-full">
+    <div className="flex flex-col items-stretch h-full">
       <Navbar />
-      <main className="p-6 grow shrink-0">
+      <main className="grow shrink-0 basis-auto">
         <PortfolioContextProvider>{children}</PortfolioContextProvider>
       </main>
       <Footer />
