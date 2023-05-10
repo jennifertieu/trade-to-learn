@@ -18,7 +18,7 @@ type Inputs = {
   duration: string;
 };
 
-const Trade: React.FC<TradeProps> = ({ tradeQuoteData }) => {
+const TradeForm: React.FC<TradeProps> = ({ tradeQuoteData }) => {
   const {
     register,
     handleSubmit,
@@ -203,4 +203,4 @@ const Trade: React.FC<TradeProps> = ({ tradeQuoteData }) => {
   );
 };
 
-export default Trade;
+export default TradeForm;
