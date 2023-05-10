@@ -73,7 +73,7 @@ export default function Portfolio() {
   }
 
   return (
-    <>
+    <section className="p-4">
       <Head>
         <title>Trade To Learn | Portfolio</title>
       </Head>
@@ -203,7 +203,7 @@ export default function Portfolio() {
           />
         </article>
       </section>
-    </>
+    </section>
   );
 }
 

@@ -49,7 +49,7 @@ export default function Trade() {
   }, []);
 
   return (
-    <>
+    <section className="p-4">
       <Head>
         <title>Trade To Learn | Trade </title>
       </Head>
@@ -116,7 +116,7 @@ export default function Trade() {
           }))}
         />
       </section>
-    </>
+    </section>
   );
 }
 
