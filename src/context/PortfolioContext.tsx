@@ -2,7 +2,7 @@ import { createContext, ReactNode, useState } from "react";
 import { portfolioData } from "@/data/portfolioDataExample";
 import Portfolio from "@/interfaces/Portfolio";
 
-type PortfolioHook = {
+type PortfolioContextType = {
   portfolio: Portfolio;
   updateCash: (tradeTotal: number, action: string) => void;
   updateUserHoldings: (
@@ -20,7 +20,7 @@ const PortfolioContextDefault = {
   getUserHoldings: () => false,
 };
 
-export const PortfolioContext = createContext<PortfolioHook>(
+export const PortfolioContext = createContext<PortfolioContextType>(
   PortfolioContextDefault
 );
 
@@ -109,6 +109,7 @@ export function PortfolioContextProvider({
     );
     return sumPrices / prices.length;
   }
+
   return (
     <PortfolioContext.Provider
       value={{ portfolio, updateCash, updateUserHoldings, getUserHoldings }}
