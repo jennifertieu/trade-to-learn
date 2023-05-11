@@ -11,7 +11,7 @@ export default function SignIn({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   return (
     <section className="h-full flex justify-center items-center">
-      <div className="p-4 h-2/4 w-3/4 lg:w-2/4 text-center rounded-lg border border-blue-600 dark:bg-blue-400 dark:border-0">
+      <div className="p-4 h-2/4 w-3/4 lg:w-1/4 text-center rounded-lg border border-blue-600 dark:bg-blue-400 dark:border-0">
         <h1 className="p-4 text-2xl">Sign In</h1>
         {Object.values(providers).map((provider) => (
           <div key={provider.name}>
