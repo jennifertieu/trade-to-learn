@@ -1,7 +1,10 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
+import clientPromise from "@/client/MongoDBClient";
 
 export const authOptions = {
+  adapter: MongoDBAdapter(clientPromise, { databaseName: "trade-to-learn" }),
   // Configure one or more authentication providers
   providers: [
     GoogleProvider({
