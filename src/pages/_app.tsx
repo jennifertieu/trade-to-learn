@@ -9,6 +9,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import type { NextComponentType } from "next";
 import { ReactNode } from "react";
+import { PortfolioContextProvider } from "@/context/PortfolioContext";
 
 type CustomAppProps<T> = AppProps & {
   Component: NextComponentType & { auth: boolean };
@@ -23,7 +24,9 @@ export default function App({
       <Layout>
         {Component.auth ? (
           <Auth>
-            <Component {...pageProps} />
+            <PortfolioContextProvider>
+              <Component {...pageProps} />
+            </PortfolioContextProvider>
             <ToastContainer />
           </Auth>
         ) : (
