@@ -206,5 +206,3 @@ export default function Portfolio() {
     </section>
   );
 }
-
-Portfolio.auth = true;
