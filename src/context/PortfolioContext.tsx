@@ -1,6 +1,9 @@
 import { createContext, ReactNode, useState } from "react";
 import { portfolioData } from "@/data/portfolioDataExample";
 import Portfolio from "@/interfaces/Portfolio";
+import { useQuery } from "react-query";
+import { useSession } from "next-auth/react";
+import { getUserPortfolio } from "@/lib/portfolioApiHandler";
 
 type PortfolioContextType = {
   portfolio: Portfolio;
@@ -30,6 +33,17 @@ export function PortfolioContextProvider({
   children: ReactNode;
 }) {
   const [portfolio, setPortfolio] = useState(portfolioData);
+  const { data: session } = useSession();
+
+  useQuery("portfolio", async () => {
+    try {
+      const userPortfolio = await getUserPortfolio(session);
+      setPortfolio(userPortfolio);
+    } catch (ex) {
+      console.log(ex);
+      throw ex;
+    }
+  });
 
   function updateCash(tradeTotal: number, action: string) {
     return setPortfolio((prevPortfolio) => {
