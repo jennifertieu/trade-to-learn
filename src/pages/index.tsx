@@ -30,13 +30,15 @@ export default function Home() {
       <section className="h-1/2 text-center flex flex-col justify-center items-center">
         <h2 className="text-2xl font-bold mt-3">About</h2>
         <p className="max-w-lg mt-3">
-          An educational application on trading stocks and cryptocurrencies
-          using Polygon.io API. The user is able to trade against real-market
-          data without experiencing the consquence of losing money. The purpose
-          is to learn how to trade without the risk.
+          An educational application on trading stocks using StockData API. The
+          user is able to learn to trade against real-market data without
+          experiencing the consquence of losing money.
+        </p>
+        <p className="max-w-lg mt-3">
+          Does not use real money or require any sign up of personal information
         </p>
       </section>
     </>
   );
 }
-Home.auth = false;
+Home.noAuth = true;

@@ -44,3 +44,5 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     props: { providers: providers ?? [] },
   };
 }
+
+SignIn.noAuth = true;
