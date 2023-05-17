@@ -1,52 +1,36 @@
 import Head from "next/head";
-import Image from "next/image";
 import PortfolioCard from "@/components/PortfolioCard";
-import { useState, useEffect, useContext } from "react";
 import TradeForm from "@/components/TradeForm";
-import dynamic from "next/dynamic";
 import Table from "@/components/Table";
 import StockQuote from "@/interfaces/StockQuote";
-import StockDataQuote from "@/interfaces/StockDataQuote";
-import { stockData } from "@/data/stockDataExample";
-const SymbolOverviewNoSSR = dynamic(
-  () => import("react-ts-tradingview-widgets").then((w) => w.SymbolOverview),
-  {
-    ssr: false,
-  }
-);
+import { useQuery, UseQueryResult } from "react-query";
+import { getStockData } from "@/lib/stockDataApiHandler";
+import { getStocks, upsertStocks } from "@/lib/stocksApiHandler";
 
 export default function Trade() {
-  const [stockDailyData, setStockDailyData] = useState(stockData);
-  const [currentDateTime, setCurrentDateTime] = useState("");
   const stockQuoteColumns = ["Name", "Ticker", "Price", "Day Change"];
 
-  // TODO: if logged in, use API data. else use fake data
+  const { data, isLoading, error }: UseQueryResult<StockQuote[], Error> =
+    useQuery("stockData", async () => {
+      try {
+        let stockData = await getStockData();
+        if (stockData.error) {
+          console.log(stockData.error);
+          stockData = await getStocks();
+        }
+        await upsertStocks(stockData as StockQuote[]);
+        return stockData as StockQuote[];
+      } catch (ex) {
+        console.log(ex);
+        throw ex;
+      }
+    });
 
-  useEffect(() => {
-    // const fetchStockData = async () => {
-    //   try {
-    //     const response = await fetch("/api/stock-quote");
-    //     const stockData: StockDataQuote = await response.json();
-    //     if (stockData.error) throw stockData.error;
-    //     setStockDailyData(stockData.data as StockQuote[]);
-    //   } catch (ex) {
-    //     throw ex;
-    //   }
-    // };
+  if (error) {
+    return <div>Error fetching data: {error.message}</div>;
+  }
 
-    // const getQuoteData = async () => {
-    //   try {
-    //     await fetchStockData();
-    //   } catch (ex) {
-    //     console.log(ex);
-    //     // TODO: update database, use as fallback if the API free plan maxes out
-    //   }
-    // };
-
-    // getQuoteData();
-
-    setCurrentDateTime(new Date().toLocaleString());
-  }, []);
+  const stockData = data ? data : [];
 
   return (
     <section className="p-4">
@@ -64,60 +48,63 @@ export default function Trade() {
           <PortfolioCard />
           <article className="p-4 rounded-lg overflow-auto lg:overflow-visible border border-neutral-400 dark:bg-neutral-800 dark:border-0">
             <h2 className="text-lg">Quotes</h2>
-            <Table
-              tableData={stockDailyData}
-              tableColumns={stockQuoteColumns}
-              tableRenderRow={(data) => {
-                if (data === undefined) {
+            {isLoading ? (
+              <div>Loading...</div>
+            ) : (
+              <Table
+                tableData={stockData}
+                tableColumns={stockQuoteColumns}
+                tableRenderRow={(data) => {
+                  if (data === undefined) {
+                    return (
+                      <>
+                        <td colSpan={stockQuoteColumns.length}>
+                          No data available
+                        </td>
+                      </>
+                    );
+                  }
                   return (
                     <>
-                      <td colSpan={stockQuoteColumns.length}>
-                        No data available
+                      <td>{data["name"]}</td>
+                      <td>{data["ticker"]}</td>
+                      <td>
+                        {data["price"].toLocaleString("en-US", {
+                          style: "currency",
+                          currency: "USD",
+                        })}
+                      </td>
+                      <td
+                        className={
+                          data["day_change"] < 0
+                            ? "text-red-700 dark:text-red-400"
+                            : "text-green-700 dark:text-green-400"
+                        }
+                      >
+                        {data["day_change"].toLocaleString("en-US", {
+                          minimumFractionDigits: 2,
+                        })}
+                        %
                       </td>
                     </>
                   );
-                }
-                return (
-                  <>
-                    <td>{data["name"]}</td>
-                    <td>{data["ticker"]}</td>
-                    <td>
-                      {data["price"].toLocaleString("en-US", {
-                        style: "currency",
-                        currency: "USD",
-                      })}
-                    </td>
-                    <td
-                      className={
-                        data["day_change"] < 0
-                          ? "text-red-700 dark:text-red-400"
-                          : "text-green-700 dark:text-green-400"
-                      }
-                    >
-                      {data["day_change"].toLocaleString("en-US", {
-                        minimumFractionDigits: 2,
-                      })}
-                      %
-                    </td>
-                  </>
-                );
-              }}
-            />
-            <div className="flex justify-between text-neutral-800 dark:text-neutral-400">
-              <small className="">Last updated at {currentDateTime}</small>
-            </div>
+                }}
+              />
+            )}
           </article>
         </section>
-        <TradeForm
-          tradeQuoteData={stockDailyData.map(({ name, ticker, price }) => ({
-            name,
-            ticker,
-            price,
-          }))}
-        />
+        {isLoading ? (
+          <div>Loading...</div>
+        ) : (
+          <TradeForm
+            tradeQuoteData={stockData.map(({ name, ticker, price }) => ({
+              name,
+              ticker,
+              price,
+            }))}
+          />
+        )}
       </section>
     </section>
   );
 }
-
-Trade.auth = true;
