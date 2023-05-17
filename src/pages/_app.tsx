@@ -10,10 +10,13 @@ import { useRouter } from "next/router";
 import type { NextComponentType } from "next";
 import { ReactNode } from "react";
 import { PortfolioContextProvider } from "@/context/PortfolioContext";
+import { QueryClient, QueryClientProvider } from "react-query";
 
 type CustomAppProps<T> = AppProps & {
-  Component: NextComponentType & { auth: boolean };
+  Component: NextComponentType & { noAuth?: boolean };
 };
+
+const queryClient = new QueryClient();
 
 export default function App({
   Component,
@@ -22,15 +25,17 @@ export default function App({
   return (
     <SessionProvider session={session}>
       <Layout>
-        {Component.auth ? (
-          <Auth>
-            <PortfolioContextProvider>
-              <Component {...pageProps} />
-            </PortfolioContextProvider>
-            <ToastContainer />
-          </Auth>
-        ) : (
+        {Component.noAuth ? (
           <Component {...pageProps} />
+        ) : (
+          <Auth>
+            <QueryClientProvider client={queryClient}>
+              <PortfolioContextProvider>
+                <Component {...pageProps} />
+              </PortfolioContextProvider>
+              <ToastContainer />
+            </QueryClientProvider>
+          </Auth>
         )}
       </Layout>
     </SessionProvider>
