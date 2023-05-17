@@ -4,8 +4,8 @@ import TradeForm from "@/components/TradeForm";
 import Table from "@/components/Table";
 import StockQuote from "@/interfaces/StockQuote";
 import { useQuery, UseQueryResult } from "react-query";
-import { getStockData } from "@/lib/stockDataApiHandler";
-import { getStocks, upsertStocks } from "@/lib/stocksApiHandler";
+import { getStockData } from "@/lib/stockDataApiService";
+import { getStocks, upsertStocks } from "@/lib/stocksApiService";
 
 export default function Trade() {
   const stockQuoteColumns = ["Name", "Ticker", "Price", "Day Change"];
@@ -14,15 +14,16 @@ export default function Trade() {
     useQuery("stockData", async () => {
       try {
         let stockData = await getStockData();
-        if (stockData.error) {
-          console.log(stockData.error);
-          stockData = await getStocks();
-        }
-        await upsertStocks(stockData as StockQuote[]);
-        return stockData as StockQuote[];
+        await upsertStocks(stockData);
+        return stockData;
       } catch (ex) {
         console.log(ex);
-        throw ex;
+        try {
+          let stockData = await getStocks();
+          return stockData;
+        } catch (ex) {
+          console.log(ex);
+        }
       }
     });
 
