@@ -22,18 +22,17 @@ export default async function handler(
       case "GET":
         // get all stock data
         const stocksData = await stocks.find({}).toArray();
-        res.status(200).json(stocksData);
-        break;
+        return res.status(200).json(stocksData);
       case "POST":
         // insert stock data
-        const result = await stocks.insertMany(req.body);
-        res.status(200).json(result);
-        break;
+        const updateResults = await stocks.insertMany(req.body);
+        return res.status(200).json(updateResults);
       case "PUT":
         // update stock data
-        const resp = await stocks.bulkWrite(req.body);
-        res.status(200).json(resp);
-        break;
+        const stocksResults = await stocks.bulkWrite(req.body);
+        return res.status(200).json(stocksResults);
+      default:
+        return res.status(405).end(`${req.method} is not allowed`);
     }
   } catch (ex) {
     console.log(ex);
