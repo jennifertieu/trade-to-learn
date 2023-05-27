@@ -25,12 +25,12 @@ export default async function handler(
         return res.status(200).json(stocksData);
       case "POST":
         // insert stock data
-        const updateResults = await stocks.insertMany(req.body);
-        return res.status(200).json(updateResults);
+        const insertResults = await stocks.insertMany(req.body);
+        return res.status(200).json(insertResults);
       case "PUT":
         // update stock data
-        const stocksResults = await stocks.bulkWrite(req.body);
-        return res.status(200).json(stocksResults);
+        const updateResults = await stocks.bulkWrite(req.body);
+        return res.status(200).json(updateResults);
       default:
         return res.status(405).end(`${req.method} is not allowed`);
     }
