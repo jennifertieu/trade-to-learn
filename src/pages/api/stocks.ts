@@ -23,11 +23,7 @@ export default async function handler(
         // get all stock data
         const stocksData = await stocks.find({}).toArray();
         return res.status(200).json(stocksData);
-      case "POST":
-        // insert stock data
-        const insertResults = await stocks.insertMany(req.body);
-        return res.status(200).json(insertResults);
-      case "PUT":
+      case "PATCH":
         // update stock data
         const updateResults = await stocks.bulkWrite(req.body);
         return res.status(200).json(updateResults);
