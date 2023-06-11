@@ -2,6 +2,7 @@
 
 # project configuration files
 .env
+.env.development
 
 # dependencies
 /node_modules
