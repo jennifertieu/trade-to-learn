@@ -1,11 +1,11 @@
 import PortfolioCard from "@/components/PortfolioCard";
-import { portfolioData } from "@/data/portfolioDataExample";
 import Head from "next/head";
 import Table from "@/components/Table";
 import { useState, useEffect, useContext } from "react";
-import { stockData } from "@/data/stockDataExample";
-import StockDataQuote from "@/interfaces/StockDataQuote";
+import { useQuery, UseQueryResult } from "react-query";
 import StockQuote from "@/interfaces/StockQuote";
+import { getStockData } from "@/lib/stockDataApiService";
+import { getStocks, upsertStocks } from "@/lib/stocksApiService";
 import { PortfolioContext } from "@/context/PortfolioContext";
 
 export default function Portfolio() {
@@ -31,42 +31,40 @@ export default function Portfolio() {
     "Total Value",
   ];
 
-  const [stockDailyData, setStockDailyData] = useState(stockData);
-  const [currentDateTime, setCurrentDateTime] = useState("");
-  const [stockDataSource, setStockDataSource] = useState("StockData API");
   const { portfolio } = useContext(PortfolioContext);
 
-  useEffect(() => {
-    // const fetchStockData = async () => {
-    //   try {
-    //     const response = await fetch("/api/stock-quote");
-    //     const stockData: StockDataQuote = await response.json();
-    //     if (stockData.error) throw stockData.error;
-    //     setStockDailyData(stockData.data as StockQuote[]);
-    //   } catch (ex) {
-    //     setStockDataSource("Database, StockData API Limit Exceeded :(");
-    //     throw ex;
-    //   }
-    // };
+  const { data, isLoading, error }: UseQueryResult<StockQuote[], Error> =
+    useQuery("stockData", async () => {
+      try {
+        let stockData = await getStockData();
+        await upsertStocks(stockData);
+        return stockData;
+      } catch (ex) {
+        console.log(ex);
+        let stockData = await getStocks();
+        return stockData;
+      }
+    });
 
-    // const getQuoteData = async () => {
-    //   try {
-    //     await fetchStockData();
-    //   } catch (ex) {
-    //     console.log(ex);
-    //     // TODO: update database, use as fallback if the API free plan maxes out
-    //   }
-    // };
+  if (error) {
+    return <div>Error fetching data: {error.message}</div>;
+  }
 
-    // getQuoteData();
-
-    setCurrentDateTime(new Date().toLocaleString());
-  }, []);
+  const stockData = data ? data : [];
 
   function getCurrentPrice(ticker: string) {
-    for (const item of stockDailyData) {
+    for (const item of stockData) {
       if (item.ticker === ticker) {
         return item.price;
+      }
+    }
+    return 0;
+  }
+
+  function getDayChange(ticker: string) {
+    for (const item of stockData) {
+      if (item.ticker === ticker) {
+        return item.day_change;
       }
     }
     return 0;
@@ -87,78 +85,90 @@ export default function Portfolio() {
         <PortfolioCard />
         <article className="p-4 rounded-lg overflow-auto md:overflow-visible border border-neutral-400 dark:bg-neutral-800 dark:border-0">
           <h2 className="text-lg">Holdings</h2>
-          <Table
-            tableData={portfolioData.stocks}
-            tableColumns={holdingsColumns}
-            tableRenderRow={(data) => {
-              if (data === undefined) {
+          {isLoading ? (
+            <div>Loading...</div>
+          ) : (
+            <Table
+              tableData={portfolio.stocks}
+              tableColumns={holdingsColumns}
+              tableRenderRow={(data) => {
+                if (data === undefined) {
+                  return (
+                    <>
+                      <td colSpan={holdingsColumns.length}>
+                        No holdings available
+                      </td>
+                    </>
+                  );
+                }
+
+                const currentPrice = getCurrentPrice(data["ticker"]);
+                const dayChange = getDayChange(data["ticker"]);
+                const totalChange =
+                  (currentPrice * data["quantity"] -
+                    data["purchase_price"] * data["quantity"]) /
+                  data["purchase_price"];
+
                 return (
                   <>
-                    <td colSpan={holdingsColumns.length}>
-                      No holdings available
-                    </td>
-                  </>
-                );
-              }
-
-              const currentPrice = getCurrentPrice(data["ticker"]);
-              const totalChange =
-                currentPrice * data["quantity"] -
-                data["purchase_price"] * data["quantity"];
-
-              return (
-                <>
-                  <td>{data["name"]}</td>
-                  <td>{data["ticker"]}</td>
-                  <td>
-                    {(currentPrice as number).toLocaleString("en-US", {
-                      style: "currency",
-                      currency: "USD",
-                      minimumFractionDigits: 2,
-                    })}
-                  </td>
-                  <td>
-                    {(data["purchase_price"] as number).toLocaleString(
-                      "en-US",
-                      {
+                    <td>{data["name"]}</td>
+                    <td>{data["ticker"]}</td>
+                    <td>
+                      {(currentPrice as number).toLocaleString("en-US", {
                         style: "currency",
                         currency: "USD",
                         minimumFractionDigits: 2,
+                      })}
+                    </td>
+                    <td>
+                      {(data["purchase_price"] as number).toLocaleString(
+                        "en-US",
+                        {
+                          style: "currency",
+                          currency: "USD",
+                          minimumFractionDigits: 2,
+                        }
+                      )}
+                    </td>
+                    <td>{data["quantity"]}</td>
+                    <td
+                      className={
+                        dayChange >= 0
+                          ? "text-green-700 dark:text-green-400"
+                          : "text-red-700 dark:text-red-400"
                       }
-                    )}
-                  </td>
-                  <td>{data["quantity"]}</td>
-                  <td className="text-green-700 dark:text-green-400">
-                    {(
-                      (currentPrice - data["purchase_price"]) /
-                      data["purchase_price"]
-                    ).toLocaleString("en-US", {
-                      minimumFractionDigits: 2,
-                    })}
-                    %
-                  </td>
-                  <td
-                    className={
-                      totalChange < 0
-                        ? "text-red-700 dark:text-red-400"
-                        : "text-green-700 dark:text-green-400"
-                    }
-                  >
-                    {totalChange.toLocaleString("en-US", {
-                      style: "percent",
-                      minimumFractionDigits: 2,
-                    })}
-                  </td>
-                  <td>
-                    {(data["quantity"] * currentPrice).toLocaleString("en-US", {
-                      style: "currency",
-                      currency: "USD",
-                    })}
-                  </td>
-                </>
-              );
-            }}
-          />
+                    >
+                      {dayChange.toLocaleString("en-US", {
+                        minimumFractionDigits: 2,
+                      })}
+                      %
+                    </td>
+                    <td
+                      className={
+                        totalChange >= 0
+                          ? "text-green-700 dark:text-green-400"
+                          : "text-red-700 dark:text-red-400"
+                      }
+                    >
+                      {totalChange.toLocaleString("en-US", {
+                        style: "percent",
+                        minimumFractionDigits: 2,
+                      })}
+                    </td>
+                    <td>
+                      {(data["quantity"] * currentPrice).toLocaleString(
+                        "en-US",
+                        {
+                          style: "currency",
+                          currency: "USD",
+                        }
+                      )}
+                    </td>
+                  </>
+                );
+              }}
+            />
+          )}
         </article>
         <article className="p-4 rounded-lg overflow-auto md:overflow-visible border border-neutral-400 dark:bg-neutral-800 dark:border-0">
           <h2 className="text-lg">Trade History</h2>

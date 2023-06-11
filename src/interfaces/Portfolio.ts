@@ -1,15 +1,9 @@
 import TradeRequest from "./TradeRequest";
-
-type Holdings = {
-  name: string;
-  ticker: string;
-  purchase_price: number;
-  quantity: number;
-};
+import Holding from "@/types/Holding";
 
 interface Portfolio {
   cash: number;
-  stocks: Holdings[];
+  stocks: Holding[];
   transactions: TradeRequest[];
 }
 

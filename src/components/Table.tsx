@@ -19,7 +19,7 @@ const Table = <T,>({
           {tableColumns.map((name, index) => (
             <th className="font-normal" key={index}>
               {name}
-              <InfoTip />
+              {/* <InfoTip /> */}
             </th>
           ))}
         </tr>

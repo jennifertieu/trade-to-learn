@@ -3,24 +3,26 @@ import { portfolioData } from "@/data/portfolioDataExample";
 import Portfolio from "@/interfaces/Portfolio";
 import { useQuery } from "react-query";
 import { useSession } from "next-auth/react";
-import { getUserPortfolio } from "@/lib/portfolioApiHandler";
+import { getUserPortfolio, addUserPortfolio } from "@/lib/portfolioApiService";
+import Holding from "@/types/Holding";
+import TradeRequest from "@/interfaces/TradeRequest";
 
 type PortfolioContextType = {
   portfolio: Portfolio;
-  updateCash: (tradeTotal: number, action: string) => void;
-  updateUserHoldings: (
-    ticker: string,
-    name: string | undefined,
-    quantity: number,
-    action: string
-  ) => void;
-  getUserHoldings: (ticker: string, quantity: number) => boolean;
+  updateCash: (cash: number) => void;
+  updateUserHoldings: (stockHoldings: Holding[]) => void;
+  addTransaction: (trades: TradeRequest[]) => void;
+  doesUserOwnStock: (ticker: string) => boolean;
+  hasSufficientStockForSale: (ticker: string, quantity: number) => boolean;
 };
+
 const PortfolioContextDefault = {
   portfolio: portfolioData,
   updateCash: () => null,
   updateUserHoldings: () => null,
-  getUserHoldings: () => false,
+  addTransaction: () => null,
+  doesUserOwnStock: () => false,
+  hasSufficientStockForSale: () => false,
 };
 
 export const PortfolioContext = createContext<PortfolioContextType>(
@@ -37,7 +39,10 @@ export function PortfolioContextProvider({
 
   useQuery("portfolio", async () => {
     try {
-      const userPortfolio = await getUserPortfolio(session);
+      let userPortfolio = await getUserPortfolio(session);
+      if (!userPortfolio) {
+        userPortfolio = await addUserPortfolio(session);
+      }
       setPortfolio(userPortfolio);
     } catch (ex) {
       console.log(ex);
@@ -45,65 +50,43 @@ export function PortfolioContextProvider({
     }
   });
 
-  function updateCash(tradeTotal: number, action: string) {
+  function updateCash(cash: number) {
     return setPortfolio((prevPortfolio) => {
-      const cashTotal =
-        action.toUpperCase() === "BUY"
-          ? prevPortfolio.cash - tradeTotal
-          : prevPortfolio.cash + tradeTotal;
       return {
         ...prevPortfolio,
-        cash: cashTotal,
+        cash: cash,
       };
     });
   }
 
-  function updateUserHoldings(
-    ticker: string,
-    name: string | undefined,
-    quantity: number,
-    action: string
-  ) {
+  function updateUserHoldings(stockHoldings: Holding[]) {
     return setPortfolio((prevPortfolio) => {
-      if (!getUserHoldings(ticker, quantity)) {
-        const initialPurchasePrice = portfolio.transactions.filter(
-          (item) => item.ticker === ticker
-        )[0].price;
-        prevPortfolio.stocks.push({
-          name: name ? name : "",
-          ticker: ticker,
-          purchase_price: initialPurchasePrice,
-          quantity: quantity,
-        });
-
-        return {
-          ...prevPortfolio,
-        };
-      }
-      for (let i = 0; i < prevPortfolio.stocks.length; i++) {
-        const item = prevPortfolio.stocks[i];
-        if (item.ticker === ticker) {
-          if (action.toUpperCase() === "BUY")
-            item.quantity = item.quantity + quantity;
-          if (action.toUpperCase() === "SELL")
-            item.quantity = item.quantity - quantity;
-          if (item.quantity === 0) {
-            prevPortfolio.stocks.splice(i, 1);
-            return {
-              ...prevPortfolio,
-            };
-          }
-          item.purchase_price = calculateAveragePrice(ticker);
-        }
-      }
-
       return {
         ...prevPortfolio,
+        stocks: stockHoldings,
       };
     });
   }
 
-  function getUserHoldings(ticker: string, quantity: number) {
+  function addTransaction(trades: TradeRequest[]) {
+    return setPortfolio((prevPortfolio) => {
+      return {
+        ...prevPortfolio,
+        transactions: trades,
+      };
+    });
+  }
+
+  function doesUserOwnStock(ticker: string) {
+    for (const item of portfolio.stocks) {
+      if (item.ticker === ticker) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  function hasSufficientStockForSale(ticker: string, quantity: number) {
     for (const item of portfolio.stocks) {
       if (item.ticker === ticker && item.quantity >= quantity) {
         return true;
@@ -112,21 +95,16 @@ export function PortfolioContextProvider({
     return false;
   }
 
-  function calculateAveragePrice(ticker: string) {
-    const filterPortfolio = portfolio.transactions.filter(
-      (item) => item.ticker === ticker
-    );
-    const prices = filterPortfolio.map((item) => item.price);
-    const sumPrices = prices.reduce(
-      (accumulator, currentValue) => accumulator + currentValue,
-      0
-    );
-    return sumPrices / prices.length;
-  }
-
   return (
     <PortfolioContext.Provider
-      value={{ portfolio, updateCash, updateUserHoldings, getUserHoldings }}
+      value={{
+        portfolio,
+        updateCash,
+        updateUserHoldings,
+        addTransaction,
+        doesUserOwnStock,
+        hasSufficientStockForSale,
+      }}
     >
       {children}
     </PortfolioContext.Provider>

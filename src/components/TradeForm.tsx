@@ -3,8 +3,19 @@ import TradeRequest from "@/interfaces/TradeRequest";
 import TradeQuoteData from "@/interfaces/TradeQuoteData";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { toast } from "react-toastify";
-import { getQuoteDetails } from "@/lib/validateTrade";
+import {
+  calculateUserTrade,
+  getQuoteDetails,
+  calculateUserCash,
+} from "@/lib/tradeHelpers";
 import { PortfolioContext } from "@/context/PortfolioContext";
+import { addUserTransactions } from "@/lib/portfolioTransactionsApiService";
+import { useSession } from "next-auth/react";
+import {
+  deleteUserStock,
+  upsertUserStock,
+} from "@/lib/portfolioStocksApiService";
+import { updateUserPortfolio } from "@/lib/portfolioApiService";
 
 interface TradeProps {
   tradeQuoteData: TradeQuoteData[];
@@ -38,53 +49,90 @@ const TradeForm: React.FC<TradeProps> = ({ tradeQuoteData }) => {
   const quantityInput = watch("quantity");
   const tickerInput = watch("ticker");
   const tickerPrice = getQuoteDetails(tickerInput, tradeQuoteData)?.price;
-  const { portfolio, updateCash, updateUserHoldings, getUserHoldings } =
-    useContext(PortfolioContext);
+  const {
+    portfolio,
+    updateCash,
+    updateUserHoldings,
+    addTransaction,
+    hasSufficientStockForSale,
+  } = useContext(PortfolioContext);
+  const { data: session } = useSession();
 
-  const notify = () => {
-    toast.success("Trade successfully submitted");
-  };
+  const onSubmit: SubmitHandler<Inputs> = async (data) => {
+    try {
+      const { ticker, action } = data;
+      const quantity = +data.quantity;
+      const tradeQuote = getQuoteDetails(ticker, tradeQuoteData);
+      const name = tradeQuote?.name;
+      const price = tradeQuote?.price ? tradeQuote.price : 0;
+      const totalPrice = quantity * price;
 
-  const onSubmit: SubmitHandler<Inputs> = (data) => {
-    const tradeQuote = getQuoteDetails(data.ticker, tradeQuoteData);
-    const name = tradeQuote?.name;
-    const price = tradeQuote?.price ? tradeQuote.price : 0;
-    const totalPrice = data.quantity * price;
+      if (
+        action.toUpperCase() === "SELL" &&
+        !hasSufficientStockForSale(ticker, quantity)
+      ) {
+        setError("quantity", {
+          type: "assets",
+          message: "You do not have any or an insufficient amount to sell",
+        });
+        return false;
+      }
 
-    if (
-      data.action.toUpperCase() === "SELL" &&
-      !getUserHoldings(data.ticker, data.quantity)
-    ) {
-      setError("quantity", {
-        type: "assets",
-        message: "You do not have any or an insufficient amount to sell",
-      });
-      return false;
+      if (action.toUpperCase() === "BUY" && totalPrice > portfolio.cash) {
+        setError("quantity", {
+          type: "cash",
+          message: "You do not have enough cash to buy",
+        });
+        return false;
+      }
+
+      // TODO: Disable Form UI
+
+      const transactionResponse = await addUserTransactions(session, {
+        ...data,
+        name,
+        total: totalPrice,
+        date: new Date().toISOString(),
+        price,
+      } as TradeRequest);
+      addTransaction(transactionResponse);
+
+      const trade = calculateUserTrade(
+        portfolio,
+        name,
+        ticker,
+        quantity,
+        price,
+        action
+      );
+
+      if (trade?.quantity === 0) {
+        const deleteResponse = await deleteUserStock(session, ticker);
+        updateUserHoldings(deleteResponse);
+      } else {
+        const updatedResponse = await upsertUserStock(session, trade);
+        updateUserHoldings(updatedResponse);
+      }
+
+      const cashCalculated = calculateUserCash(
+        portfolio.cash,
+        quantity * price,
+        action
+      );
+      const portfolioResponse = await updateUserPortfolio(
+        session,
+        cashCalculated
+      );
+      updateCash(portfolioResponse.value.cash);
+
+      toast.success("Trade successfully submitted");
+
+      reset();
+    } catch (ex) {
+      console.log(ex);
+      // TODO: display toast error
+      toast.error("Something went wrong.");
     }
-
-    if (data.action.toUpperCase() === "BUY" && totalPrice > portfolio.cash) {
-      setError("quantity", {
-        type: "cash",
-        message: "You do not have enough cash to buy",
-      });
-      return false;
-    }
-
-    portfolio.transactions.push({
-      ...data,
-      name,
-      total: totalPrice,
-      date: new Date().toISOString(),
-      price,
-    } as TradeRequest);
-
-    updateUserHoldings(data.ticker, name, data.quantity, data.action);
-
-    updateCash(data.quantity * price, data.action);
-
-    notify();
-
-    reset();
   };
 
   return (
@@ -107,7 +155,7 @@ const TradeForm: React.FC<TradeProps> = ({ tradeQuoteData }) => {
               </option>
             ))}
           </select>
-          <div className="mt-1 text-red-600 dark:text-red-400">
+          <div className="mt-1 text-sm text-red-600 dark:text-red-400">
             {errors.ticker?.message}
           </div>
         </div>
@@ -124,7 +172,7 @@ const TradeForm: React.FC<TradeProps> = ({ tradeQuoteData }) => {
             <option value="Buy">Buy</option>
             <option value="Sell">Sell</option>
           </select>
-          <div className="mt-1 text-red-600 dark:text-red-400">
+          <div className="mt-1 text-sm text-red-600 dark:text-red-400">
             {errors.action?.message}
           </div>
         </div>
@@ -153,16 +201,16 @@ const TradeForm: React.FC<TradeProps> = ({ tradeQuoteData }) => {
           ) : (
             ""
           )}
-          <div className="mt-1 text-red-600 dark:text-red-400">
+          <div className="mt-1 text-sm text-red-600 dark:text-red-400">
             {errors.quantity?.type === "required" && errors.quantity?.message}
           </div>
-          <div className="mt-1 text-red-600 dark:text-red-400">
+          <div className="mt-1 text-sm text-red-600 dark:text-red-400">
             {errors.quantity?.type === "min" && errors.quantity?.message}
           </div>
-          <div className="mt-1 text-red-600 dark:text-red-400">
+          <div className="mt-1 text-sm text-red-600 dark:text-red-400">
             {errors.quantity?.type === "assets" && errors.quantity?.message}
           </div>
-          <div className="mt-1 text-red-600 dark:text-red-400">
+          <div className="mt-1 text-sm text-red-600 dark:text-red-400">
             {errors.quantity?.type === "cash" && errors.quantity?.message}
           </div>
         </div>
@@ -176,20 +224,6 @@ const TradeForm: React.FC<TradeProps> = ({ tradeQuoteData }) => {
             {...register("orderType", { required: "This field is required" })}
           >
             <option value="Market">Market</option>
-            <option value="Limit">Limit</option>
-          </select>
-        </div>
-        <div className="mt-6">
-          <label className="block" htmlFor="duration">
-            Duration
-          </label>
-          <select
-            className="rounded-lg w-full p-2"
-            id="duration"
-            {...register("duration", { required: "This field is required" })}
-          >
-            <option value="Day">Day</option>
-            <option value="Until Cancelled">Until Cancelled</option>
           </select>
         </div>
         <button

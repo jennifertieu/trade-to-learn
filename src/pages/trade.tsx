@@ -18,12 +18,8 @@ export default function Trade() {
         return stockData;
       } catch (ex) {
         console.log(ex);
-        try {
-          let stockData = await getStocks();
-          return stockData;
-        } catch (ex) {
-          console.log(ex);
-        }
+        let stockData = await getStocks();
+        return stockData;
       }
     });
 
