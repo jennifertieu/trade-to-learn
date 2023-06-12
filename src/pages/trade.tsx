@@ -63,9 +63,9 @@ export default function Trade() {
                   }
                   return (
                     <>
-                      <td>{data["name"]}</td>
-                      <td>{data["ticker"]}</td>
-                      <td>
+                      <td className="p-4">{data["name"]}</td>
+                      <td className="p-4">{data["ticker"]}</td>
+                      <td className="p-4">
                         {data["price"].toLocaleString("en-US", {
                           style: "currency",
                           currency: "USD",
@@ -74,8 +74,8 @@ export default function Trade() {
                       <td
                         className={
                           data["day_change"] < 0
-                            ? "text-red-700 dark:text-red-400"
-                            : "text-green-700 dark:text-green-400"
+                            ? "p-4 text-red-700 dark:text-red-400"
+                            : "p-4 text-green-700 dark:text-green-400"
                         }
                       >
                         {data["day_change"].toLocaleString("en-US", {

@@ -111,8 +111,8 @@ export default function Portfolio() {
 
                 return (
                   <>
-                    <td>{data["name"]}</td>
-                    <td>{data["ticker"]}</td>
+                    <td className="p-4">{data["name"]}</td>
+                    <td className="p-4">{data["ticker"]}</td>
                     <td>
                       {(currentPrice as number).toLocaleString("en-US", {
                         style: "currency",
@@ -120,7 +120,7 @@ export default function Portfolio() {
                         minimumFractionDigits: 2,
                       })}
                     </td>
-                    <td>
+                    <td className="p-4">
                       {(data["purchase_price"] as number).toLocaleString(
                         "en-US",
                         {
@@ -130,12 +130,12 @@ export default function Portfolio() {
                         }
                       )}
                     </td>
-                    <td>{data["quantity"]}</td>
+                    <td className="p-4">{data["quantity"]}</td>
                     <td
                       className={
                         dayChange >= 0
-                          ? "text-green-700 dark:text-green-400"
-                          : "text-red-700 dark:text-red-400"
+                          ? "p-4 text-green-700 dark:text-green-400"
+                          : "p-4 text-red-700 dark:text-red-400"
                       }
                     >
                       {dayChange.toLocaleString("en-US", {
@@ -146,8 +146,8 @@ export default function Portfolio() {
                     <td
                       className={
                         totalChange >= 0
-                          ? "text-green-700 dark:text-green-400"
-                          : "text-red-700 dark:text-red-400"
+                          ? "p-4 text-green-700 dark:text-green-400"
+                          : "p-4 text-red-700 dark:text-red-400"
                       }
                     >
                       {totalChange.toLocaleString("en-US", {
@@ -155,7 +155,7 @@ export default function Portfolio() {
                         minimumFractionDigits: 2,
                       })}
                     </td>
-                    <td>
+                    <td className="p-4">
                       {(data["quantity"] * currentPrice).toLocaleString(
                         "en-US",
                         {
@@ -187,20 +187,22 @@ export default function Portfolio() {
               }
               return (
                 <>
-                  <td>{new Date(data["date"]).toUTCString()}</td>
-                  <td>{data["name"]}</td>
-                  <td>{data["ticker"]}</td>
-                  <td>
+                  <td className="p-4">
+                    {new Date(data["date"]).toLocaleString()}
+                  </td>
+                  <td className="p-4">{data["name"]}</td>
+                  <td className="p-4">{data["ticker"]}</td>
+                  <td className="p-4">
                     {(data["price"] as number).toLocaleString("en-US", {
                       style: "currency",
                       currency: "USD",
                       minimumFractionDigits: 2,
                     })}
                   </td>
-                  <td>{data["quantity"]}</td>
-                  <td>{data["orderType"]}</td>
-                  <td>{data["action"]}</td>
-                  <td>
+                  <td className="p-4">{data["quantity"]}</td>
+                  <td className="p-4">{data["orderType"]}</td>
+                  <td className="p-4">{data["action"]}</td>
+                  <td className="p-4">
                     {data["total"].toLocaleString("en-US", {
                       style: "currency",
                       currency: "USD",

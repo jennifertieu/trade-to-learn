@@ -17,7 +17,7 @@ const Table = <T,>({
       <thead className="text-left">
         <tr className="h-14 text-sm text-neutral-700 dark:text-neutral-300">
           {tableColumns.map((name, index) => (
-            <th className="font-normal" key={index}>
+            <th className="font-normal px-4" key={index}>
               {name}
               {/* <InfoTip /> */}
             </th>
