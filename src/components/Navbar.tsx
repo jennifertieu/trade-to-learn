@@ -54,7 +54,11 @@ const Navbar = () => {
                 </Link>
               </li>
               <li>
-                <Link href="/portfolio" onClick={closeMenu}>
+                <Link
+                  href="/portfolio"
+                  className="hover:text-blue-400"
+                  onClick={closeMenu}
+                >
                   Portfolio
                 </Link>
               </li>
@@ -65,6 +69,7 @@ const Navbar = () => {
           <li>
             {session ? (
               <button
+                className="hover:text-blue-400"
                 onClick={() => {
                   signOut({ callbackUrl: "/" });
                 }}
@@ -73,6 +78,7 @@ const Navbar = () => {
               </button>
             ) : (
               <button
+                className="hover:text-blue-400"
                 onClick={() => {
                   signIn();
                 }}
@@ -85,7 +91,7 @@ const Navbar = () => {
         <div
           className={`${
             isOpen ? "" : "hidden"
-          } p-4 absolute top-0 right-0 md:hidden text-lg`}
+          } p-4 absolute top-0 right-0 md:hidden text-lg hover:text-blue-400`}
         >
           <button type="button" onClick={closeMenu}>
             X
