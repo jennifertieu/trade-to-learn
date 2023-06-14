@@ -7,6 +7,7 @@ import StockQuote from "@/interfaces/StockQuote";
 import { getStockData } from "@/lib/stockDataApiService";
 import { getStocks, upsertStocks } from "@/lib/stocksApiService";
 import { PortfolioContext } from "@/context/PortfolioContext";
+import InfoTip from "@/components/InfoTip";
 
 export default function Portfolio() {
   const transactionColumns = [
@@ -50,6 +51,10 @@ export default function Portfolio() {
     return <div>Error fetching data: {error.message}</div>;
   }
 
+  if (!portfolio) {
+    return <div>Uh oh, Something went wrong. No portfolio available</div>;
+  }
+
   const stockData = data ? data : [];
 
   function getCurrentPrice(ticker: string) {
@@ -83,8 +88,11 @@ export default function Portfolio() {
       </section>
       <section className="flex flex-col gap-4 mt-4">
         <PortfolioCard />
-        <article className="p-4 rounded-lg overflow-auto md:overflow-visible border border-neutral-400 dark:bg-neutral-800 dark:border-0">
-          <h2 className="text-lg">Holdings</h2>
+        <article className="p-4 rounded-lg overflow-auto lg:overflow-visible border border-neutral-400 dark:bg-neutral-800 dark:border-0">
+          <h2 className="text-lg">
+            Holdings
+            <InfoTip name="holdings" />
+          </h2>
           {isLoading ? (
             <div>Loading...</div>
           ) : (
@@ -113,7 +121,7 @@ export default function Portfolio() {
                   <>
                     <td className="p-4">{data["name"]}</td>
                     <td className="p-4">{data["ticker"]}</td>
-                    <td>
+                    <td className="p-4">
                       {(currentPrice as number).toLocaleString("en-US", {
                         style: "currency",
                         currency: "USD",
@@ -170,7 +178,7 @@ export default function Portfolio() {
             />
           )}
         </article>
-        <article className="p-4 rounded-lg overflow-auto md:overflow-visible border border-neutral-400 dark:bg-neutral-800 dark:border-0">
+        <article className="p-4 rounded-lg overflow-auto lg:overflow-visible border border-neutral-400 dark:bg-neutral-800 dark:border-0">
           <h2 className="text-lg">Trade History</h2>
           <Table
             tableData={portfolio.transactions}
