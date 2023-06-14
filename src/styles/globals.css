@@ -32,32 +32,6 @@ a {
   height: 100%;
 }
 
-.info-button {
-  display: inline-block;
-  position: relative;
-  border: 1px solid;
-  border-radius: 50%;
-  height: 16px;
-  width: 16px;
-  text-align: center;
-  line-height: 14px;
-  font-size: 0.85rem;
-}
-
-.info-box {
-  position: absolute;
-  border: 1px solid;
-  border-radius: 5px;
-  padding: 1rem;
-  top: 0;
-  left: 0;
-  background-color: #fff;
-  color: #000;
-  transform: translateY(-100%);
-  display: none;
-  z-index: 10;
-}
-
-.info-button:hover > .info-box {
-  display: block;
+.hero {
+  font-family: "Climate Crisis", cursive;
 }
