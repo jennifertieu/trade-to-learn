@@ -16,6 +16,7 @@ import {
   upsertUserStock,
 } from "@/lib/portfolioStocksApiService";
 import { updateUserPortfolio } from "@/lib/portfolioApiService";
+import InfoTip from "./InfoTip";
 
 interface TradeProps {
   tradeQuoteData: TradeQuoteData[];
@@ -57,6 +58,10 @@ const TradeForm: React.FC<TradeProps> = ({ tradeQuoteData }) => {
     hasSufficientStockForSale,
   } = useContext(PortfolioContext);
   const { data: session } = useSession();
+
+  if (!portfolio) {
+    return <div>Uh oh, Something went wrong. No portfolio available</div>;
+  }
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
@@ -162,6 +167,7 @@ const TradeForm: React.FC<TradeProps> = ({ tradeQuoteData }) => {
         <div className="mt-6">
           <label className="block" htmlFor="action">
             Action
+            <InfoTip name="Action" />
           </label>
           <select
             className="rounded-lg w-full p-2"
@@ -217,14 +223,15 @@ const TradeForm: React.FC<TradeProps> = ({ tradeQuoteData }) => {
         <div className="mt-6">
           <label className="block" htmlFor="orderType">
             Order Type
+            <InfoTip name="Order Type" />
           </label>
-          <select
-            className="rounded-lg w-full p-2"
+          <input
+            className="rounded-lg w-full p-2 text-neutral-500 dark:bg-neutral-800 border border-neutral-500"
             id="orderType"
+            type="text"
             {...register("orderType", { required: "This field is required" })}
-          >
-            <option value="Market">Market</option>
-          </select>
+            readOnly
+          />
         </div>
         <button
           type="submit"

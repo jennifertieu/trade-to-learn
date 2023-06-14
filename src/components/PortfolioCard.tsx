@@ -1,6 +1,6 @@
-import Portfolio from "@/interfaces/Portfolio";
 import { useContext } from "react";
 import { PortfolioContext } from "@/context/PortfolioContext";
+import InfoTip from "./InfoTip";
 
 const PortfolioCard = () => {
   const { portfolio } = useContext(PortfolioContext);
@@ -10,6 +10,7 @@ const PortfolioCard = () => {
         <div>
           <div className="text-sm text-neutral-700 dark:text-neutral-300">
             Cash
+            <InfoTip name="Cash" />
           </div>
           <div className="text-2xl font-semibold mt-1">
             {portfolio
@@ -17,7 +18,7 @@ const PortfolioCard = () => {
                   style: "currency",
                   currency: "USD",
                 })
-              : ""}
+              : "Loading..."}
           </div>
         </div>
       </div>

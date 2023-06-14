@@ -17,16 +17,19 @@ const Table = <T,>({
       <thead className="text-left">
         <tr className="h-14 text-sm text-neutral-700 dark:text-neutral-300">
           {tableColumns.map((name, index) => (
-            <th className="font-normal px-4" key={index}>
+            <th
+              className="font-normal whitespace-nowrap lg:whitespace-normal px-4"
+              key={index}
+            >
               {name}
-              {/* <InfoTip /> */}
+              <InfoTip name={name} />
             </th>
           ))}
         </tr>
       </thead>
       <tbody>
-        {tableData.length > 0 ? (
-          tableData.map((data, index) => (
+        {tableData && tableData.length > 0 ? (
+          tableData?.map((data, index) => (
             <tr
               className="h-14 border-t border-neutral-600 dark:border-neutral-400"
               key={index}
