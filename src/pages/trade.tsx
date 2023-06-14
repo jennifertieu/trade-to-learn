@@ -6,9 +6,10 @@ import StockQuote from "@/interfaces/StockQuote";
 import { useQuery, UseQueryResult } from "react-query";
 import { getStockData } from "@/lib/stockDataApiService";
 import { getStocks, upsertStocks } from "@/lib/stocksApiService";
+import InfoTip from "@/components/InfoTip";
 
 export default function Trade() {
-  const stockQuoteColumns = ["Name", "Ticker", "Price", "Day Change"];
+  const stockQuoteColumns = ["Name", "Ticker", "Current Price", "Day Change"];
 
   const { data, isLoading, error }: UseQueryResult<StockQuote[], Error> =
     useQuery("stockData", async () => {
@@ -43,8 +44,11 @@ export default function Trade() {
       <section className="flex flex-col gap-4 mt-4 lg:flex-row">
         <section className="flex flex-col gap-4 grow">
           <PortfolioCard />
-          <article className="p-4 rounded-lg overflow-auto lg:overflow-visible border border-neutral-400 dark:bg-neutral-800 dark:border-0">
-            <h2 className="text-lg">Quotes</h2>
+          <article className="p-4 rounded-lg overflow-auto md:overflow-visible border border-neutral-400 dark:bg-neutral-800 dark:border-0">
+            <h2 className="text-lg">
+              Quotes
+              <InfoTip name="Quote" />
+            </h2>
             {isLoading ? (
               <div>Loading...</div>
             ) : (
