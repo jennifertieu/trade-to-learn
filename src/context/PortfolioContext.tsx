@@ -8,7 +8,7 @@ import Holding from "@/types/Holding";
 import TradeRequest from "@/interfaces/TradeRequest";
 
 type PortfolioContextType = {
-  portfolio: Portfolio;
+  portfolio: Portfolio | null;
   updateCash: (cash: number) => void;
   updateUserHoldings: (stockHoldings: Holding[]) => void;
   addTransaction: (trades: TradeRequest[]) => void;
@@ -17,7 +17,7 @@ type PortfolioContextType = {
 };
 
 const PortfolioContextDefault = {
-  portfolio: portfolioData,
+  portfolio: null,
   updateCash: () => null,
   updateUserHoldings: () => null,
   addTransaction: () => null,
