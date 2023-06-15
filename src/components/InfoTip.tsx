@@ -1,8 +1,37 @@
+import { useRef, useState } from "react";
+
 type InfoTipProps = {
   name: string;
 };
 
 export default function InfoTip({ name }: InfoTipProps) {
+  const infoBoxRef = useRef(null);
+  const [infoBoxLeft, setInfoBoxLeft] = useState("50%");
+
+  function handleInfoBoxOverflow() {
+    if (!infoBoxRef.current) {
+      return;
+    }
+
+    if (window.innerWidth < 1024) {
+      return setInfoBoxLeft("50%");
+    }
+
+    const boundingClient = infoBoxRef.current.getBoundingClientRect();
+    if (boundingClient.left < 0) {
+      return setInfoBoxLeft(
+        Math.abs(boundingClient.left - 16).toString() + "px"
+      );
+    }
+
+    if (boundingClient.right > window.innerWidth) {
+      return setInfoBoxLeft(
+        -Math.abs(boundingClient.right - window.innerWidth + 16).toString() +
+          "px"
+      );
+    }
+  }
+
   const tipDictionary: {
     [key: string]: string;
   } = {
@@ -30,9 +59,16 @@ export default function InfoTip({ name }: InfoTipProps) {
   return (
     <>
       {tipDescription ? (
-        <button className="group inline-block relative border rounded-full h-4 w-4 text-center leading-3 text-sm text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400 ms-1">
+        <button
+          className="group inline-block relative border rounded-full h-4 w-4 text-center leading-3 text-sm text-blue-600 dark:text-blue-400 border-blue-600 dark:border-blue-400 ms-1"
+          onMouseOver={handleInfoBoxOverflow}
+        >
           i
-          <div className="group-hover:block hidden rounded w-72 p-4 md:p-2 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 lg:absolute lg:top-0 lg:-translate-y-full text-black dark:text-white bg-blue-600 dark:bg-blue-400">
+          <div
+            className="group-hover:block hidden rounded w-72 p-4 md:p-2 fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 lg:absolute lg:top-0 lg:-translate-y-full text-black dark:text-white bg-blue-600 dark:bg-blue-400"
+            ref={infoBoxRef}
+            style={{ left: infoBoxLeft }}
+          >
             <div className="font-bold text-center mb-2 block lg:hidden">
               {name}
             </div>
