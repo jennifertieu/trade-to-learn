@@ -13,12 +13,10 @@ const PortfolioCard = () => {
             <InfoTip name="Cash" />
           </div>
           <div className="text-2xl font-semibold mt-1">
-            {portfolio
-              ? portfolio.cash.toLocaleString("en-US", {
-                  style: "currency",
-                  currency: "USD",
-                })
-              : "Loading..."}
+            {portfolio.cash.toLocaleString("en-US", {
+              style: "currency",
+              currency: "USD",
+            })}
           </div>
         </div>
       </div>

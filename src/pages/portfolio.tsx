@@ -51,10 +51,6 @@ export default function Portfolio() {
     return <div>Error fetching data: {error.message}</div>;
   }
 
-  if (!portfolio) {
-    return <div>Uh oh, Something went wrong. No portfolio available</div>;
-  }
-
   const stockData = data ? data : [];
 
   function getCurrentPrice(ticker: string) {

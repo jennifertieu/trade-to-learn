@@ -59,10 +59,6 @@ const TradeForm: React.FC<TradeProps> = ({ tradeQuoteData }) => {
   } = useContext(PortfolioContext);
   const { data: session } = useSession();
 
-  if (!portfolio) {
-    return <div>Uh oh, Something went wrong. No portfolio available</div>;
-  }
-
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
       const { ticker, action } = data;

@@ -1,14 +1,16 @@
 import { createContext, ReactNode, useState } from "react";
-import { portfolioData } from "@/data/portfolioDataExample";
 import Portfolio from "@/interfaces/Portfolio";
+import { portfolioData } from "@/data/portfolioDataExample";
 import { useQuery } from "react-query";
 import { useSession } from "next-auth/react";
 import { getUserPortfolio, addUserPortfolio } from "@/lib/portfolioApiService";
 import Holding from "@/types/Holding";
 import TradeRequest from "@/interfaces/TradeRequest";
 
+const portfolioDataDefault = { cash: 0, stocks: [], transactions: [] };
+
 type PortfolioContextType = {
-  portfolio: Portfolio | null;
+  portfolio: Portfolio;
   updateCash: (cash: number) => void;
   updateUserHoldings: (stockHoldings: Holding[]) => void;
   addTransaction: (trades: TradeRequest[]) => void;
@@ -17,7 +19,7 @@ type PortfolioContextType = {
 };
 
 const PortfolioContextDefault = {
-  portfolio: null,
+  portfolio: portfolioDataDefault,
   updateCash: () => null,
   updateUserHoldings: () => null,
   addTransaction: () => null,
@@ -34,7 +36,8 @@ export function PortfolioContextProvider({
 }: {
   children: ReactNode;
 }) {
-  const [portfolio, setPortfolio] = useState(portfolioData);
+  const [portfolio, setPortfolio] = useState(portfolioDataDefault);
+  const [isLoading, setIsLoading] = useState(true);
   const { data: session } = useSession();
 
   useQuery("portfolio", async () => {
@@ -44,6 +47,7 @@ export function PortfolioContextProvider({
         userPortfolio = await addUserPortfolio(session);
       }
       setPortfolio(userPortfolio);
+      setIsLoading(false);
     } catch (ex) {
       console.log(ex);
       throw ex;
@@ -106,7 +110,7 @@ export function PortfolioContextProvider({
         hasSufficientStockForSale,
       }}
     >
-      {children}
+      {isLoading ? <div>Loading...</div> : <>{children}</>}
     </PortfolioContext.Provider>
   );
 }
