@@ -47,7 +47,7 @@ export default function InfoTip({ name }: InfoTipProps) {
       "A market order is the most basic type of trade. It is an order to buy or sell immediately at the current price.",
     action: "Buy/Sell allow you add/remove stocks from your portfolio.",
     "total change":
-      "Subtract the total purchase price from the current price of the stock then divide that by the original purchase price and multiply that figure by 100. This gives you the total percentage change",
+      "Subtract the total purchase price (purchase price x quantity) from total current price of the stock (current price x quantity) then divide that by the purchase price and multiply that figure by 100. This gives you the total percentage change",
     "total value":
       "The current market price of the shares multiplied by the number of shares held for that specific stock (Market Value)",
     cash: "Total amount of cash available for making trades.",
