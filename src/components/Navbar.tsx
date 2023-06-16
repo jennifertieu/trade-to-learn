@@ -47,7 +47,7 @@ const Navbar = () => {
               <li>
                 <Link
                   href="/trade"
-                  className="hover:text-blue-400"
+                  className="hover:underline-offset-4 hover:underline"
                   onClick={closeMenu}
                 >
                   Trade
@@ -56,7 +56,7 @@ const Navbar = () => {
               <li>
                 <Link
                   href="/portfolio"
-                  className="hover:text-blue-400"
+                  className="hover:underline-offset-4 hover:underline"
                   onClick={closeMenu}
                 >
                   Portfolio
@@ -69,7 +69,7 @@ const Navbar = () => {
           <li>
             {session ? (
               <button
-                className="hover:text-blue-400"
+                className="hover:underline-offset-4 hover:underline"
                 onClick={() => {
                   signOut({ callbackUrl: "/" });
                 }}
@@ -78,7 +78,7 @@ const Navbar = () => {
               </button>
             ) : (
               <button
-                className="hover:text-blue-400"
+                className="hover:underline-offset-4 hover:underline"
                 onClick={() => {
                   signIn();
                 }}
