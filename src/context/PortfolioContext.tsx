@@ -1,13 +1,16 @@
 import { createContext, ReactNode, useState } from "react";
 import Portfolio from "@/interfaces/Portfolio";
-import { portfolioData } from "@/data/portfolioDataExample";
 import { useQuery } from "react-query";
 import { useSession } from "next-auth/react";
 import { getUserPortfolio, addUserPortfolio } from "@/lib/portfolioApiService";
 import Holding from "@/types/Holding";
 import TradeRequest from "@/interfaces/TradeRequest";
 
-const portfolioDataDefault = { cash: 0, stocks: [], transactions: [] };
+const portfolioDataDefault: Portfolio = {
+  cash: 0,
+  stocks: [],
+  transactions: [],
+};
 
 type PortfolioContextType = {
   portfolio: Portfolio;
