@@ -17,7 +17,7 @@ export default function InfoTip({ name }: InfoTipProps) {
       return setInfoBoxLeft("50%");
     }
 
-    const boundingClient = infoBoxRef.current?.getBoundingClientRect();
+    const boundingClient = infoBoxRef.current.getBoundingClientRect();
     if (boundingClient.left < 0) {
       return setInfoBoxLeft(
         Math.abs(boundingClient.left - 16).toString() + "px"
