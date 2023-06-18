@@ -1,11 +1,11 @@
-import { useRef, useState } from "react";
+import { MutableRefObject, useRef, useState } from "react";
 
 type InfoTipProps = {
   name: string;
 };
 
 export default function InfoTip({ name }: InfoTipProps) {
-  const infoBoxRef = useRef(null);
+  const infoBoxRef: MutableRefObject<HTMLDivElement | null> = useRef(null);
   const [infoBoxLeft, setInfoBoxLeft] = useState("50%");
 
   function handleInfoBoxOverflow() {
@@ -17,7 +17,7 @@ export default function InfoTip({ name }: InfoTipProps) {
       return setInfoBoxLeft("50%");
     }
 
-    const boundingClient = infoBoxRef.current.getBoundingClientRect();
+    const boundingClient = infoBoxRef.current?.getBoundingClientRect();
     if (boundingClient.left < 0) {
       return setInfoBoxLeft(
         Math.abs(boundingClient.left - 16).toString() + "px"
