@@ -32,7 +32,6 @@ export const authOptions = {
   },
   callbacks: {
     async session({ session, user }: { session: Session; user: User }) {
-      console.log(session, user);
       return {
         ...session,
         user,
