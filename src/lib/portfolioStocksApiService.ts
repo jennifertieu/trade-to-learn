@@ -1,9 +1,9 @@
 import type { Session } from "next-auth";
 import Holding from "@/types/Holding";
 
-export const getUserStocks = async (session: Session) => {
+export const getUserStocks = async (session: Session | null) => {
   try {
-    const response = await fetch(`api/portfolio/${session.user.id}/stocks`);
+    const response = await fetch(`api/portfolio/${session?.user.id}/stocks`);
     return response.json();
   } catch (ex) {
     console.log(ex);
@@ -11,11 +11,14 @@ export const getUserStocks = async (session: Session) => {
   }
 };
 
-export const upsertUserStock = async (session: Session, stockData: Holding) => {
+export const upsertUserStock = async (
+  session: Session | null,
+  stockData: Holding
+) => {
   try {
     const upsertRequestBody = {
       filter: {
-        userId: session.user.id,
+        userId: session?.user.id,
         stocks: {
           $elemMatch: {
             ticker: stockData.ticker,
@@ -39,7 +42,7 @@ export const upsertUserStock = async (session: Session, stockData: Holding) => {
       },
     };
 
-    const response = await fetch(`api/portfolio/${session.user.id}/stocks`, {
+    const response = await fetch(`api/portfolio/${session?.user.id}/stocks`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -53,11 +56,14 @@ export const upsertUserStock = async (session: Session, stockData: Holding) => {
   }
 };
 
-export const deleteUserStock = async (session: Session, ticker: string) => {
+export const deleteUserStock = async (
+  session: Session | null,
+  ticker: string
+) => {
   try {
     const deleteRequestBody = {
       filter: {
-        userId: session.user.id,
+        userId: session?.user.id,
         stocks: {
           $elemMatch: {
             ticker: ticker,
@@ -72,7 +78,7 @@ export const deleteUserStock = async (session: Session, ticker: string) => {
       },
     };
 
-    const response = await fetch(`api/portfolio/${session.user.id}/stocks`, {
+    const response = await fetch(`api/portfolio/${session?.user.id}/stocks`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

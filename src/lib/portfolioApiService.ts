@@ -1,8 +1,8 @@
 import type { Session } from "next-auth";
 
-export const getUserPortfolio = async (session: Session) => {
+export const getUserPortfolio = async (session: Session | null) => {
   try {
-    const response = await fetch(`/api/portfolio/${session.user.id}`);
+    const response = await fetch(`/api/portfolio/${session?.user.id}`);
     const userPortfolio = response.json();
     return userPortfolio;
   } catch (ex) {
@@ -11,9 +11,9 @@ export const getUserPortfolio = async (session: Session) => {
   }
 };
 
-export const addUserPortfolio = async (session: Session) => {
+export const addUserPortfolio = async (session: Session | null) => {
   try {
-    const response = await fetch(`/api/portfolio/${session.user.id}`, {
+    const response = await fetch(`/api/portfolio/${session?.user.id}`, {
       method: "POST",
       headers: {
         "Context-Type": "application/json",
@@ -32,9 +32,12 @@ export const addUserPortfolio = async (session: Session) => {
   }
 };
 
-export const updateUserPortfolio = async (session: Session, cash: number) => {
+export const updateUserPortfolio = async (
+  session: Session | null,
+  cash: number
+) => {
   try {
-    const response = await fetch(`/api/portfolio/${session.user.id}`, {
+    const response = await fetch(`/api/portfolio/${session?.user.id}`, {
       method: "PUT",
       headers: {
         "Context-Type": "application/json",
@@ -52,6 +55,6 @@ export const updateUserPortfolio = async (session: Session, cash: number) => {
   }
 };
 
-export const deleteUserPortfolio = async (session: Session) => {
+export const deleteUserPortfolio = async (session: Session | null) => {
   // TODO
 };
