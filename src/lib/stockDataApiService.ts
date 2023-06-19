@@ -1,4 +1,3 @@
-import StockQuote from "@/interfaces/StockQuote";
 import StockDataQuote from "@/interfaces/StockDataQuote";
 
 export const getStockData = async () => {
