@@ -1,10 +1,10 @@
 import TradeRequest from "@/interfaces/TradeRequest";
 import type { Session } from "next-auth";
 
-export const getUserTransactions = async (session: Session | null) => {
+export const getUserTransactions = async (session: Session) => {
   try {
     const response = await fetch(
-      `api/portfolio/${session?.user.id}/transactions`
+      `api/portfolio/${session.user.id}/transactions`
     );
     return response.json();
   } catch (ex) {
@@ -14,12 +14,12 @@ export const getUserTransactions = async (session: Session | null) => {
 };
 
 export const addUserTransactions = async (
-  session: Session | null,
+  session: Session,
   transaction: TradeRequest
 ) => {
   try {
     const response = await fetch(
-      `api/portfolio/${session?.user.id}/transactions`,
+      `api/portfolio/${session.user.id}/transactions`,
       {
         method: "PATCH",
         headers: {
@@ -27,7 +27,7 @@ export const addUserTransactions = async (
         },
         body: JSON.stringify({
           filter: {
-            userId: session?.user.id,
+            userId: session.user.id,
           },
           update: {
             $push: {
