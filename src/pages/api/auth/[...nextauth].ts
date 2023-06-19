@@ -3,6 +3,7 @@ import GoogleProvider from "next-auth/providers/google";
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
 import mongoClientPromise from "@/client/MongoDBClient";
 import EmailProvider from "next-auth/providers/email";
+import type { Session, User } from "next-auth";
 
 export const authOptions = {
   adapter: MongoDBAdapter(mongoClientPromise),
@@ -30,7 +31,8 @@ export const authOptions = {
     // error: "/auth/error",
   },
   callbacks: {
-    async session({ session, user }) {
+    async session({ session, user }: { session: Session; user: User }) {
+      console.log(session, user);
       return {
         ...session,
         user,
