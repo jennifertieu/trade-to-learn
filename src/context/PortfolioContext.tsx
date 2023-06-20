@@ -113,7 +113,11 @@ export function PortfolioContextProvider({
         hasSufficientStockForSale,
       }}
     >
-      {isLoading ? <div>Loading...</div> : <>{children}</>}
+      {isLoading ? (
+        <div className="animate-pulse">Loading...</div>
+      ) : (
+        <>{children}</>
+      )}
     </PortfolioContext.Provider>
   );
 }

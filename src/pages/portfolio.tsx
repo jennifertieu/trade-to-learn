@@ -90,7 +90,7 @@ export default function Portfolio() {
             <InfoTip name="holdings" />
           </h2>
           {isLoading ? (
-            <div>Loading...</div>
+            <div className="py-4 text-center">Loading...</div>
           ) : (
             <Table
               tableData={portfolio.stocks}

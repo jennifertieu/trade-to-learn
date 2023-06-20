@@ -50,7 +50,7 @@ export default function Trade() {
               <InfoTip name="Quote" />
             </h2>
             {isLoading ? (
-              <div>Loading...</div>
+              <div className="py-4 text-center">Loading...</div>
             ) : (
               <Table
                 tableData={stockData}
@@ -95,7 +95,12 @@ export default function Trade() {
           </article>
         </section>
         {isLoading ? (
-          <div>Loading...</div>
+          <article className="rounded-lg p-6 w-full lg:w-4/12 border border-neutral-400 dark:bg-neutral-800 dark:border-0">
+            <h2 className="text-lg">Trade</h2>
+            <div className="animate-pulse py-4 text-center h-full flex justify-center items-center">
+              Loading...
+            </div>
+          </article>
         ) : (
           <TradeForm
             tradeQuoteData={stockData.map(({ name, ticker, price }) => ({
