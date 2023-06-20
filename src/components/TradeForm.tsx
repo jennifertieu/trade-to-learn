@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import TradeRequest from "@/interfaces/TradeRequest";
 import TradeQuoteData from "@/interfaces/TradeQuoteData";
 import { useForm, SubmitHandler } from "react-hook-form";
@@ -58,6 +58,7 @@ const TradeForm: React.FC<TradeProps> = ({ tradeQuoteData }) => {
     hasSufficientStockForSale,
   } = useContext(PortfolioContext);
   const { data: session } = useSession();
+  const [isExecuting, setIsExecuting] = useState(false);
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
@@ -87,7 +88,7 @@ const TradeForm: React.FC<TradeProps> = ({ tradeQuoteData }) => {
         return false;
       }
 
-      // TODO: Disable Form UI
+      setIsExecuting(true);
 
       const transactionResponse = await addUserTransactions(session, {
         ...data,
@@ -126,12 +127,13 @@ const TradeForm: React.FC<TradeProps> = ({ tradeQuoteData }) => {
       );
       updateCash(portfolioResponse.value.cash);
 
+      setIsExecuting(false);
+
       toast.success("Trade successfully submitted");
 
       reset();
     } catch (ex) {
       console.log(ex);
-      // TODO: display toast error
       toast.error("Something went wrong.");
     }
   };
@@ -147,6 +149,7 @@ const TradeForm: React.FC<TradeProps> = ({ tradeQuoteData }) => {
           <select
             className="rounded-lg w-full p-2"
             id="ticker"
+            data-testid="symbol select"
             {...register("ticker", { required: "This field is required" })}
           >
             <option value="">Please select an asset</option>
@@ -231,8 +234,33 @@ const TradeForm: React.FC<TradeProps> = ({ tradeQuoteData }) => {
         </div>
         <button
           type="submit"
-          className="rounded-lg bg-blue-600 dark:bg-blue-400 text-neutral-50 py-2 px-4 mt-6 w-full"
+          className={`${
+            isExecuting ? "opacity-50" : "opacity-100"
+          } rounded-lg bg-blue-600 dark:bg-blue-400 text-neutral-50 py-2 px-4 mt-6 w-full relative`}
+          disabled={isExecuting ? true : false}
         >
+          {isExecuting && (
+            <svg
+              className="animate-spin -ml-1 mr-3 h-5 w-5 text-white absolute"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+          )}
           Submit
         </button>
       </form>
