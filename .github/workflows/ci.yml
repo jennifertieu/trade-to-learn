@@ -7,6 +7,7 @@ env:
   STOCK_DATA_API_KEY: ${{ secrets.STOCK_DATA_API_KEY }}
   GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
   GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+  MONGODB_URI: ${{ secrets.MONGODB_URI }}
   SMTP_USER: ${{ secrets.SMTP_USER }}
   SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
   SMTP_HOST: ${{ secrets.SMTP_HOST }}
