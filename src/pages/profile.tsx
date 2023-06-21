@@ -1,7 +1,12 @@
 import Head from "next/head";
 import { MutableRefObject, useRef } from "react";
+import { deleteUserPortfolio } from "@/lib/portfolioApiService";
+import { useSession } from "next-auth/react";
+import { toast } from "react-toastify";
+import { signOut } from "next-auth/react";
 
 export default function Profile() {
+  const { data: session } = useSession();
   const dialogRef: MutableRefObject<HTMLDialogElement | null> = useRef(null);
 
   function openModal() {
@@ -12,6 +17,28 @@ export default function Profile() {
   function closeModal() {
     if (!dialogRef.current) return;
     return dialogRef.current.close();
+  }
+
+  async function deleteUserAccount() {
+    try {
+      //close modal
+      dialogRef.current?.close();
+      // delete user portfolio
+      await deleteUserPortfolio(session);
+      // delete user data
+      await fetch(`/api/users/${session?.user.id}`, {
+        method: "DELETE",
+      });
+      // display success message
+      toast.success("Account deleted successfully. Logging out...");
+      // sign user out
+      signOut();
+    } catch (ex) {
+      // display error message
+      toast.error(
+        "Something went wrong. Please contact support if application is not working."
+      );
+    }
   }
 
   return (
@@ -42,7 +69,7 @@ export default function Profile() {
           </p>
           <button
             className="mt-2 py-2 px-4 rounded-lg bg-red-600 dark:bg-red-400"
-            onClick={closeModal}
+            onClick={deleteUserAccount}
           >
             Confirm
           </button>
