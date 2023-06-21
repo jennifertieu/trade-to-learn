@@ -50,7 +50,7 @@ export default function Trade() {
               <InfoTip name="Quote" />
             </h2>
             {isLoading ? (
-              <div className="py-4 text-center">Loading...</div>
+              <div className="animate-pulse py-4 text-center">Loading...</div>
             ) : (
               <Table
                 tableData={stockData}
