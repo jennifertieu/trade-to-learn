@@ -14,4 +14,11 @@ describe("Profile Page", () => {
     const deleteButton = screen.getByRole("button", { name: "Delete Account" });
     expect(deleteButton).toBeInTheDocument();
   });
+
+  it("confirmation dialog is hidden", () => {
+    render(<Profile />);
+
+    const dialogElement = screen.getByTestId("confirmation-dialog");
+    expect(dialogElement).not.toBeVisible();
+  });
 });
