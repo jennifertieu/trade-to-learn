@@ -15,7 +15,7 @@ export default function Auth({ children }: { children: ReactNode }) {
   if (status === "loading") {
     return (
       <div className="animate-pulse flex justify-center items-center w-full h-full text-xl">
-        Loading...
+        Authenticating...
       </div>
     );
   }
