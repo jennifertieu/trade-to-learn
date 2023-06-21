@@ -7,4 +7,11 @@ describe("Profile Page", () => {
 
     expect(screen.getByText("Profile")).toBeInTheDocument();
   });
+
+  it("display delete account button", () => {
+    render(<Profile />);
+
+    const deleteButton = screen.getByRole("button", { name: "Delete Account" });
+    expect(deleteButton).toBeInTheDocument();
+  });
 });
