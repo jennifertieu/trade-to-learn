@@ -62,6 +62,15 @@ const Navbar = () => {
                   Portfolio
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/profile"
+                  className="hover:underline-offset-4 hover:underline"
+                  onClick={closeMenu}
+                >
+                  Profile
+                </Link>
+              </li>
             </>
           ) : (
             ""

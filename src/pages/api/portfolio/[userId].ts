@@ -25,7 +25,10 @@ export default async function handler(
         return res.status(200).json(userPortfolio);
       case "POST":
         const insertResults = await portfolio.insertOne(JSON.parse(req.body));
-        return res.status(200).json(insertResults);
+        const userPortfolioInserted = await portfolio.findOne({
+          userId: req.query.userId,
+        });
+        return res.status(200).json(userPortfolioInserted);
       case "PUT":
         // update existing user portfolio data
         const updateArgs = JSON.parse(req.body);
@@ -36,8 +39,8 @@ export default async function handler(
         );
         return res.status(200).json(updateResults);
       case "DELETE":
-        // TODO: delete user portfolio
-        break;
+        const deleteResults = await portfolio.deleteOne(JSON.parse(req.body));
+        return res.status(200).json(deleteResults);
       default:
         return res.status(405).end(`${req.method} is not allowed`);
     }

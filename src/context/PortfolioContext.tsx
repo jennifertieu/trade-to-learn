@@ -40,17 +40,15 @@ export function PortfolioContextProvider({
   children: ReactNode;
 }) {
   const [portfolio, setPortfolio] = useState(portfolioDataDefault);
-  const [isLoading, setIsLoading] = useState(true);
   const { data: session } = useSession();
 
-  useQuery("portfolio", async () => {
+  const { isLoading } = useQuery("portfolio", async () => {
     try {
       let userPortfolio = await getUserPortfolio(session);
       if (!userPortfolio) {
         userPortfolio = await addUserPortfolio(session);
       }
       setPortfolio(userPortfolio);
-      setIsLoading(false);
     } catch (ex) {
       console.log(ex);
       throw ex;
@@ -113,7 +111,13 @@ export function PortfolioContextProvider({
         hasSufficientStockForSale,
       }}
     >
-      {isLoading ? <div>Loading...</div> : <>{children}</>}
+      {isLoading ? (
+        <div className="animate-pulse flex justify-center items-center w-full h-full text-xl">
+          Portfolio Loading...
+        </div>
+      ) : (
+        <>{children}</>
+      )}
     </PortfolioContext.Provider>
   );
 }
