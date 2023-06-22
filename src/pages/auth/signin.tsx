@@ -5,15 +5,19 @@ import type {
 import { getProviders, signIn, getCsrfToken } from "next-auth/react";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "../api/auth/[...nextauth]";
+import { useRouter } from "next/router";
+import { SignInError } from "@/components/SignInError";
 
 export default function SignIn({
   providers,
   csrfToken,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const { error } = useRouter().query;
   return (
     <section className="h-full flex justify-center items-center">
       <div className="p-4 w-3/4 lg:w-1/4 text-center rounded-lg border border-blue-600 dark:bg-blue-400 dark:border-0">
         <h1 className="p-4 text-2xl">Sign In</h1>
+        {error && <SignInError error={error} />}
         {Object.values(providers).map((provider) => (
           <div key={provider.name} className="flex flex-col mt-2">
             {provider.name === "Email" ? (

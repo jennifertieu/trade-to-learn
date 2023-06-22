@@ -40,7 +40,7 @@ const Navbar = () => {
         <ul
           className={`${
             isOpen ? "" : "hidden"
-          } flex flex-col justify-center items-center gap-6 absolute top-0 left-0 bg-neutral-900 w-screen h-2/4 md:static md:w-fit md:h-fit md:bg-inherit md:flex md:flex-row md:gap-4`}
+          } flex flex-col justify-center items-center gap-6 z-10 absolute top-0 left-0 bg-neutral-900 w-screen h-2/4 md:static md:w-fit md:h-fit md:bg-inherit md:flex md:flex-row md:gap-4`}
         >
           {session ? (
             <>
@@ -100,7 +100,7 @@ const Navbar = () => {
         <div
           className={`${
             isOpen ? "" : "hidden"
-          } p-4 absolute top-0 right-0 md:hidden text-lg hover:text-blue-400`}
+          } p-4 absolute z-20 top-0 right-0 md:hidden text-lg hover:text-blue-400`}
         >
           <button type="button" onClick={closeMenu}>
             X
