@@ -153,8 +153,8 @@ const TradeForm: React.FC<TradeProps> = ({ tradeQuoteData }) => {
             {...register("ticker", { required: "This field is required" })}
           >
             <option value="">Please select an asset</option>
-            {tradeQuoteData.map((data, index) => (
-              <option value={data.ticker} key={index}>
+            {tradeQuoteData.map((data) => (
+              <option value={data.ticker} key={data.ticker}>
                 {data.ticker} - {data.name}
               </option>
             ))}

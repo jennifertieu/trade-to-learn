@@ -16,10 +16,10 @@ const Table = <T,>({
     <table className="w-full">
       <thead className="text-left">
         <tr className="h-14 text-sm text-neutral-700 dark:text-neutral-300">
-          {tableColumns.map((name, index) => (
+          {tableColumns.map((name) => (
             <th
               className="font-normal whitespace-nowrap lg:whitespace-normal px-4"
-              key={index}
+              key={crypto.randomUUID()}
             >
               {name}
               <InfoTip name={name} />
@@ -29,10 +29,10 @@ const Table = <T,>({
       </thead>
       <tbody>
         {tableData && tableData.length > 0 ? (
-          tableData?.map((data, index) => (
+          tableData?.map((data) => (
             <tr
               className="h-14 border-t border-neutral-600 dark:border-neutral-400"
-              key={index}
+              key={crypto.randomUUID()}
             >
               {tableRenderRow(data)}
             </tr>
