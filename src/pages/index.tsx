@@ -38,12 +38,12 @@ export default function Home() {
             money.
           </p>
           <div className="flex flex-col">
-            <p className="mt-3 p-4 text-xl">
+            <p className="p-4 text-xl">
               Trade to Learn is a beginner-friendly way to start trading stocks.
               It is a simple and easy-to-use trading application that uses
               real-market data to help educate you on trading.
             </p>
-            <p className="mt-3 p-4 text-xl">
+            <p className="p-4 text-xl">
               Our application does NOT require any real money investment or the
               submission of personal information during the sign-up process.
             </p>
