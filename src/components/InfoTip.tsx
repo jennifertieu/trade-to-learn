@@ -45,7 +45,7 @@ export default function InfoTip({ name }: InfoTipProps) {
       "The price an investor pays for an investment, and the price becomes the investor’s cost basis for calculating gain or loss when selling the investment. To determine the cost basis of the purchases, the investor needs to calculate the weighted average cost, which is the total dollar amount of the purchases divided by the number of shares purchased.",
     "order type":
       "A market order is the most basic type of trade. It is an order to buy or sell immediately at the current price.",
-    action: "Buy/Sell allow you add/remove stocks from your portfolio.",
+    action: "Buy/Sell allow you to add/remove stocks from your portfolio.",
     "total change":
       "Subtract the total purchase price (purchase price x quantity) from total current price of the stock (current price x quantity) then divide that by the purchase price and multiply that figure by 100. This gives you the total percentage change",
     "total value":
