@@ -147,7 +147,7 @@ const TradeForm: React.FC<TradeProps> = ({ tradeQuoteData }) => {
             Symbol
           </label>
           <select
-            className="rounded-lg w-full p-2"
+            className="rounded-lg w-full p-2 appearance-none"
             id="ticker"
             data-testid="symbol select"
             {...register("ticker", { required: "This field is required" })}
@@ -169,7 +169,7 @@ const TradeForm: React.FC<TradeProps> = ({ tradeQuoteData }) => {
             <InfoTip name="Action" />
           </label>
           <select
-            className="rounded-lg w-full p-2"
+            className="rounded-lg w-full p-2 appearance-none"
             id="action"
             {...register("action", { required: "This field is required" })}
           >
