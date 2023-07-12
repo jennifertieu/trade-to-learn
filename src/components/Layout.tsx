@@ -10,11 +10,7 @@ type LayoutProps = {
 const Layout = ({ children }: LayoutProps) => {
   const router = useRouter();
   return (
-    <div
-      className={`flex flex-col items-stretch h-full overflow-auto ${
-        router.pathname === "/" ? "bg-blue-600" : ""
-      }`}
-    >
+    <div className="flex flex-col items-stretch h-full overflow-auto">
       <Navbar />
       <main className="grow shrink-0 basis-auto">{children}</main>
       <Footer />
