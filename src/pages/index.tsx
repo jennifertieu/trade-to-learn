@@ -11,13 +11,13 @@ export default function Home() {
       <Head>
         <title>Trade To Learn | Welcome</title>
       </Head>
-      <section className="text-center py-8 flex flex-col justify-center items-center gap-6 bg-blue-600">
-        <h1 className="climate-crisis-font text-5xl font-bold uppercase text-black">
+      <section className="text-center py-8 flex flex-col justify-center items-center gap-6">
+        <h1 className="climate-crisis-font text-5xl font-bold uppercase">
           Welcome
         </h1>
-        <p className="text-black">A beginner friendly way to start trading</p>
+        <p className="">A beginner friendly way to start trading</p>
         <Link
-          className="rounded-lg bg-violet-500 text-white py-2 px-4"
+          className="rounded-lg bg-violet-500 py-2 px-4 text-white"
           href={session ? "/trade" : "/auth/signin"}
         >
           Start Trading
@@ -27,11 +27,11 @@ export default function Home() {
           alt="Trading Preview"
           width={1000}
           height={700}
-          className="px-2"
+          className="px-2 border rounded-lg dark:shadow-lg dark:shadow-white"
         />
       </section>
-      <section className="leading-normal flex flex-col items-center p-4 text-black mt-10">
-        <h2 className="text-xl font-bold mt-3 text-white">About</h2>
+      <section className="leading-normal flex flex-col items-center p-4 mt-10">
+        <h2 className="text-xl font-bold mt-3">About</h2>
         <div className="flex max-w-5xl flex-col justify-between md:flex-row">
           <p className="climate-crisis-font mt-3 text-2xl p-4">
             An easy way to get started trading without the risk of losing real
