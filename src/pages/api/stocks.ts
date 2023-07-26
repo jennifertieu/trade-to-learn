@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import mongoClientPromise from "@/client/MongoDBClient";
+import mongoClientPromise from "@/lib/mongoDBClient";
 import { authOptions } from "./auth/[...nextauth]";
 import { getServerSession } from "next-auth";
 
