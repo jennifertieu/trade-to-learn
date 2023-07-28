@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getStockQuote } from "@/client/StockDataClient";
+import { getStockQuote } from "@/lib/StockDataClient";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./auth/[...nextauth]";
 
