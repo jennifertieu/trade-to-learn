@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import mongoClientPromise from "@/lib/mongoDBClient";
 import { authOptions } from "../auth/[...nextauth]";
 import { getServerSession } from "next-auth";
+import { getUserPortfolio } from "@/lib/database";
 
 export default async function handler(
   req: NextApiRequest,
@@ -20,8 +21,7 @@ export default async function handler(
 
     switch (req.method) {
       case "GET":
-        const query = { userId: req.query.userId };
-        const userPortfolio = await portfolio.findOne(query);
+        const userPortfolio = await getUserPortfolio(req.query.userId);
         return res.status(200).json(userPortfolio);
       case "POST":
         const insertResults = await portfolio.insertOne(JSON.parse(req.body));
