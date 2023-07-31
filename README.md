@@ -22,11 +22,11 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-    <img src="./trade-to-learn-preview.png" alt="Logo" style="max-width: 100%">
+    <img src="./images/trade-to-learn-preview.png" alt="Logo" style="max-width: 100%">
 <h1 align="center">Trade to Learn</h1>
 
   <p align="center">
-A beginner friendly way to start trading, Trade to Learn is a simple and easy-to-use trading application that uses real-market data. It does NOT require any real money investment or the submission of personal information.
+A beginner-friendly way to start trading, Trade to Learn is a simple and easy-to-use trading application that uses real-market data. It does NOT require any real money investment or the submission of personal information.
     <br />
     <a href="https://tradetolearn.app">View Site</a>
     ·
