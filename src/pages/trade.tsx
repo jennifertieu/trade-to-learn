@@ -36,7 +36,9 @@ export default function Trade() {
         <title>Trade To Learn | Trade </title>
       </Head>
       <section>
-        <h1 className="text-3xl font-bold">Trade</h1>
+        <h1 className="text-3xl font-bold" data-testid="trade">
+          Trade
+        </h1>
         <p className="text-sm text-neutral-500 dark:text-neutral-300">
           Trading Common Stocks
         </p>
