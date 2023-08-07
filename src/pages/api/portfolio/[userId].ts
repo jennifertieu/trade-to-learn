@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import mongoClientPromise from "@/lib/mongoDBClient";
 import { authOptions } from "../auth/[...nextauth]";
 import { getServerSession } from "next-auth";
-import { getUserPortfolio } from "@/lib/database";
+import { fetchUserPortfolio } from "@/lib/portfolio";
 
 export default async function handler(
   req: NextApiRequest,
@@ -21,14 +21,8 @@ export default async function handler(
 
     switch (req.method) {
       case "GET":
-        const userPortfolio = await getUserPortfolio(req.query.userId);
+        const userPortfolio = await fetchUserPortfolio(req.query.userId);
         return res.status(200).json(userPortfolio);
-      case "POST":
-        const insertResults = await portfolio.insertOne(JSON.parse(req.body));
-        const userPortfolioInserted = await portfolio.findOne({
-          userId: req.query.userId,
-        });
-        return res.status(200).json(userPortfolioInserted);
       case "PUT":
         // update existing user portfolio data
         const updateArgs = JSON.parse(req.body);

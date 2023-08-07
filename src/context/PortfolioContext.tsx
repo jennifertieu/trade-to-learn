@@ -2,9 +2,9 @@ import { createContext, ReactNode, useState } from "react";
 import Portfolio from "@/interfaces/Portfolio";
 import { useQuery } from "react-query";
 import { useSession } from "next-auth/react";
-import { getUserPortfolio, addUserPortfolio } from "@/lib/portfolioApiService";
 import Holding from "@/types/Holding";
 import TradeRequest from "@/interfaces/TradeRequest";
+import { fetchUserPortfolio } from "@/lib/portfolio";
 
 const portfolioDataDefault: Portfolio = {
   cash: 0,
@@ -44,10 +44,8 @@ export function PortfolioContextProvider({
 
   const { isLoading } = useQuery("portfolio", async () => {
     try {
-      let userPortfolio = await getUserPortfolio(session);
-      if (!userPortfolio) {
-        userPortfolio = await addUserPortfolio(session);
-      }
+      const response = await fetch(`/api/portfolio/${session?.user.id}`);
+      const userPortfolio = await response.json();
       setPortfolio(userPortfolio);
     } catch (ex) {
       console.log(ex);
