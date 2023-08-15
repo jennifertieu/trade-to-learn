@@ -2,7 +2,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import mongoClientPromise from "@/lib/mongoDBClient";
 import { authOptions } from "../auth/[...nextauth]";
 import { getServerSession } from "next-auth";
-import { fetchUserPortfolio } from "@/lib/portfolio";
+import { fetchUserPortfolio, updateUserPortfolio } from "@/lib/portfolio";
 
 export default async function handler(
   req: NextApiRequest,
@@ -25,13 +25,9 @@ export default async function handler(
         return res.status(200).json(userPortfolio);
       case "PUT":
         // update existing user portfolio data
-        const updateArgs = JSON.parse(req.body);
-        const updateResults = await portfolio.findOneAndUpdate(
-          updateArgs.filter,
-          updateArgs.update,
-          updateArgs.options
-        );
-        return res.status(200).json(updateResults);
+        const { userId, cash } = JSON.parse(req.body);
+        const updatedDocument = await updateUserPortfolio(userId, cash);
+        return res.status(200).json(updatedDocument);
       case "DELETE":
         const deleteResults = await portfolio.deleteOne(JSON.parse(req.body));
         return res.status(200).json(deleteResults);

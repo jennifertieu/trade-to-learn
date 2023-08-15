@@ -121,11 +121,21 @@ const TradeForm: React.FC<TradeProps> = ({ tradeQuoteData }) => {
         quantity * price,
         action
       );
-      const portfolioResponse = await updateUserPortfolio(
-        session,
-        cashCalculated
+      const portfolioResponse = await fetch(
+        `/api/portfolio/${session?.user.id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Context-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId: session?.user.id,
+            cash: cashCalculated,
+          }),
+        }
       );
-      updateCash(portfolioResponse.value.cash);
+      const portfolioResponseData = await portfolioResponse.json();
+      updateCash(portfolioResponseData.value.cash);
 
       setIsExecuting(false);
 
