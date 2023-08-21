@@ -60,7 +60,7 @@ export async function makeTrade(
         userId,
         name,
         ticker,
-        quantity,
+        trade.quantity,
         trade.purchase_price
       );
     }
