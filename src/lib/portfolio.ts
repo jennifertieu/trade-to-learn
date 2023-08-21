@@ -3,6 +3,8 @@ import {
   getUserPortfolio,
   updateUserPortfolioCash,
   deleteUserPortfolio,
+  upsertUserStock,
+  deleteUserStock,
 } from "./database";
 
 export async function fetchUserPortfolio(
@@ -20,19 +22,6 @@ export async function fetchUserPortfolio(
     return userPortfolio;
   } catch (ex) {
     console.error("Error with fetching user portfolio data", ex);
-    throw ex;
-  }
-}
-
-export async function updateUserPortfolio(
-  userId: string | string[] | undefined,
-  cash: number
-) {
-  try {
-    const userPortfolio = await updateUserPortfolioCash(userId, cash);
-    return userPortfolio;
-  } catch (ex) {
-    console.error("Error with getting user portfolio", ex);
     throw ex;
   }
 }

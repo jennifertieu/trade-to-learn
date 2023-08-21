@@ -14,18 +14,14 @@ const portfolioDataDefault: Portfolio = {
 
 type PortfolioContextType = {
   portfolio: Portfolio;
-  updateCash: (cash: number) => void;
-  updateUserHoldings: (stockHoldings: Holding[]) => void;
-  addTransaction: (trades: TradeRequest[]) => void;
+  updatePortfolio: (portfolio: Portfolio) => void;
   doesUserOwnStock: (ticker: string) => boolean;
   hasSufficientStockForSale: (ticker: string, quantity: number) => boolean;
 };
 
 const PortfolioContextDefault = {
   portfolio: portfolioDataDefault,
-  updateCash: () => null,
-  updateUserHoldings: () => null,
-  addTransaction: () => null,
+  updatePortfolio: () => null,
   doesUserOwnStock: () => false,
   hasSufficientStockForSale: () => false,
 };
@@ -53,31 +49,8 @@ export function PortfolioContextProvider({
     }
   });
 
-  function updateCash(cash: number) {
-    return setPortfolio((prevPortfolio) => {
-      return {
-        ...prevPortfolio,
-        cash: cash,
-      };
-    });
-  }
-
-  function updateUserHoldings(stockHoldings: Holding[]) {
-    return setPortfolio((prevPortfolio) => {
-      return {
-        ...prevPortfolio,
-        stocks: stockHoldings,
-      };
-    });
-  }
-
-  function addTransaction(trades: TradeRequest[]) {
-    return setPortfolio((prevPortfolio) => {
-      return {
-        ...prevPortfolio,
-        transactions: trades,
-      };
-    });
+  function updatePortfolio(portfolio: Portfolio) {
+    return setPortfolio(portfolio);
   }
 
   function doesUserOwnStock(ticker: string) {
@@ -102,9 +75,7 @@ export function PortfolioContextProvider({
     <PortfolioContext.Provider
       value={{
         portfolio,
-        updateCash,
-        updateUserHoldings,
-        addTransaction,
+        updatePortfolio,
         doesUserOwnStock,
         hasSufficientStockForSale,
       }}

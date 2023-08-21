@@ -29,6 +29,12 @@ async function getSessionsCollection() {
   return sessions;
 }
 
+async function getStocksCollection() {
+  const db = (await mongoClientPromise).db();
+  const stocks = db.collection("stocks");
+  return stocks;
+}
+
 export async function getUserPortfolio(userId: string | string[] | undefined) {
   try {
     const portfolio = await getPortfolioCollection();
@@ -128,6 +134,90 @@ export async function deleteUserPortfolio(
     return deletedDocument;
   } catch (ex) {
     console.error("Error with deleting user portfolio", ex);
+    throw ex;
+  }
+}
+
+export async function upsertUserStock(
+  userId: string | string[] | undefined,
+  name: string,
+  ticker: string,
+  quantity: number,
+  purchase_price: number
+) {
+  try {
+    const portfolio = await getPortfolioCollection();
+    const filter = {
+      userId: userId,
+      stocks: {
+        $elemMatch: {
+          ticker: ticker,
+        },
+      },
+    };
+    const existingStock = await portfolio.findOne(filter);
+    if (existingStock) {
+      const updatedDocument = await portfolio.findOneAndUpdate(filter, {
+        $set: {
+          "stocks.$.name": name,
+          "stocks.$.ticker": ticker,
+          "stocks.$.purchase_price": purchase_price,
+          "stocks.$.quantity": quantity,
+        },
+      });
+      return updatedDocument;
+    }
+
+    await portfolio.updateOne(
+      { userId: userId },
+      {
+        $push: { stocks: { name, purchase_price, ticker, quantity } },
+      }
+    );
+    const updatedStockHoldings = await portfolio.findOne(filter);
+    return updatedStockHoldings;
+  } catch (ex) {
+    console.error("Error with updating user stock information", ex);
+    throw ex;
+  }
+}
+
+export async function deleteUserStock(
+  userId: string | string[] | undefined,
+  ticker: string
+) {
+  try {
+    const portfolio = await getPortfolioCollection();
+    const response = await portfolio.findOneAndUpdate(
+      {
+        userId: userId,
+        stocks: {
+          $elemMatch: {
+            ticker: ticker,
+          },
+        },
+      },
+      {
+        $pull: { stocks: { ticker } },
+      },
+      {
+        returnDocument: "after",
+      }
+    );
+    return response;
+  } catch (ex) {
+    console.error("Error in deleting user stock holding", ex);
+    throw ex;
+  }
+}
+
+export async function getStockQuotes() {
+  try {
+    const stocks = await getStocksCollection();
+    const response = stocks.find({}).toArray();
+    return response;
+  } catch (ex) {
+    console.error("Error in getting stock data from the database", ex);
     throw ex;
   }
 }

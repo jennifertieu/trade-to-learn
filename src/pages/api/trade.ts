@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { authOptions } from "../auth/[...nextauth]";
+import { authOptions } from "./auth/[...nextauth]";
 import { getServerSession } from "next-auth";
-import { fetchUserPortfolio, deleteUserPorfolio } from "@/lib/portfolio";
+import { makeTrade } from "@/lib/trade";
 
 export default async function handler(
   req: NextApiRequest,
@@ -15,16 +15,19 @@ export default async function handler(
   }
 
   try {
-    if (req.method === "GET") {
-      const userPortfolio = await fetchUserPortfolio(req.query.userId);
-      return res.status(200).json(userPortfolio);
+    if (req.method === "POST") {
+      const { userId, ticker, action, quantity, orderType, duration } =
+        JSON.parse(req.body);
+      const response = await makeTrade(
+        userId,
+        ticker,
+        action,
+        quantity,
+        orderType,
+        duration
+      );
+      return res.status(200).json(response);
     }
-    if (req.method === "DELETE") {
-      const { userId } = JSON.parse(req.body);
-      const deleteResults = await deleteUserPorfolio(userId);
-      return res.status(200).json(deleteResults);
-    }
-
     return res.status(405).end(`${req.method} is not allowed`);
   } catch (ex) {
     console.log(ex);
