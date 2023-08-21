@@ -1,8 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import mongoClientPromise from "@/lib/mongoDBClient";
 import { authOptions } from "../auth/[...nextauth]";
 import { getServerSession } from "next-auth";
-import { fetchUserPortfolio, updateUserPortfolio } from "@/lib/portfolio";
+import {
+  fetchUserPortfolio,
+  updateUserPortfolio,
+  deleteUserPorfolio,
+} from "@/lib/portfolio";
 
 export default async function handler(
   req: NextApiRequest,
@@ -16,24 +19,23 @@ export default async function handler(
   }
 
   try {
-    const db = (await mongoClientPromise).db();
-    const portfolio = db.collection("portfolio");
-
-    switch (req.method) {
-      case "GET":
-        const userPortfolio = await fetchUserPortfolio(req.query.userId);
-        return res.status(200).json(userPortfolio);
-      case "PUT":
-        // update existing user portfolio data
-        const { userId, cash } = JSON.parse(req.body);
-        const updatedDocument = await updateUserPortfolio(userId, cash);
-        return res.status(200).json(updatedDocument);
-      case "DELETE":
-        const deleteResults = await portfolio.deleteOne(JSON.parse(req.body));
-        return res.status(200).json(deleteResults);
-      default:
-        return res.status(405).end(`${req.method} is not allowed`);
+    if (req.method === "GET") {
+      const userPortfolio = await fetchUserPortfolio(req.query.userId);
+      return res.status(200).json(userPortfolio);
     }
+    if (req.method === "PUT") {
+      // update existing user portfolio data
+      const { userId, cash } = JSON.parse(req.body);
+      const updatedDocument = await updateUserPortfolio(userId, cash);
+      return res.status(200).json(updatedDocument);
+    }
+    if (req.method === "DELETE") {
+      const { userId } = JSON.parse(req.body);
+      const deleteResults = await deleteUserPorfolio(userId);
+      return res.status(200).json(deleteResults);
+    }
+
+    return res.status(405).end(`${req.method} is not allowed`);
   } catch (ex) {
     console.log(ex);
     throw ex;

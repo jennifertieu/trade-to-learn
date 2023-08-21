@@ -2,6 +2,7 @@ import {
   addUserPortfolio,
   getUserPortfolio,
   updateUserPortfolioCash,
+  deleteUserPortfolio,
 } from "./database";
 
 export async function fetchUserPortfolio(
@@ -32,6 +33,18 @@ export async function updateUserPortfolio(
     return userPortfolio;
   } catch (ex) {
     console.error("Error with getting user portfolio", ex);
+    throw ex;
+  }
+}
+
+export async function deleteUserPorfolio(
+  userId: string | string[] | undefined
+) {
+  try {
+    const response = await deleteUserPortfolio(userId);
+    return response;
+  } catch (ex) {
+    console.error("Error with deleting user portoflio", ex);
     throw ex;
   }
 }

@@ -3,11 +3,30 @@ import Holding from "@/types/Holding";
 import mongoClientPromise from "./mongoDBClient";
 import { Collection } from "mongodb";
 import PortfolioDocument from "@/interfaces/PortfolioDocument";
+import { ObjectId } from "mongodb";
 
 async function getPortfolioCollection() {
   const db = (await mongoClientPromise).db();
   const Portfolio: Collection<PortfolioDocument> = db.collection("portfolio");
   return Portfolio;
+}
+
+async function getUsersCollection() {
+  const db = (await mongoClientPromise).db();
+  const users = db.collection("users");
+  return users;
+}
+
+async function getAccountsCollection() {
+  const db = (await mongoClientPromise).db();
+  const accounts = db.collection("accounts");
+  return accounts;
+}
+
+async function getSessionsCollection() {
+  const db = (await mongoClientPromise).db();
+  const sessions = db.collection("sessions");
+  return sessions;
 }
 
 export async function getUserPortfolio(userId: string | string[] | undefined) {
@@ -80,6 +99,35 @@ export async function addUserTransaction(
     return updatedDocument;
   } catch (ex) {
     console.error("Error with adding user transaction", ex);
+    throw ex;
+  }
+}
+
+export async function deleteUserPortfolio(
+  userId: string | string[] | undefined
+) {
+  try {
+    const portfolio = await getPortfolioCollection();
+    const accounts = await getAccountsCollection();
+    const users = await getUsersCollection();
+    const sessions = await getSessionsCollection();
+
+    if (!userId || Array.isArray(userId)) {
+      throw new Error("Error with userId");
+    }
+    const deletedDocument = await portfolio.deleteOne({ userId: userId });
+    const usersResponse = await users.deleteOne({
+      _id: new ObjectId(userId),
+    });
+    const accountsResponse = await accounts.deleteMany({
+      userId: new ObjectId(userId),
+    });
+    const sessionsResponse = await sessions.deleteMany({
+      userId: new ObjectId(userId),
+    });
+    return deletedDocument;
+  } catch (ex) {
+    console.error("Error with deleting user portfolio", ex);
     throw ex;
   }
 }
