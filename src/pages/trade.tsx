@@ -4,8 +4,6 @@ import TradeForm from "@/components/TradeForm";
 import Table from "@/components/Table";
 import StockQuote from "@/interfaces/StockQuote";
 import { useQuery, UseQueryResult } from "react-query";
-import { getStockData } from "@/lib/stockDataApiService";
-import { getStocks, upsertStocks } from "@/lib/stocksApiService";
 import InfoTip from "@/components/InfoTip";
 
 export default function Trade() {
@@ -14,13 +12,12 @@ export default function Trade() {
   const { data, isLoading, error }: UseQueryResult<StockQuote[], Error> =
     useQuery("stockData", async () => {
       try {
-        let stockData = await getStockData();
-        await upsertStocks(stockData);
-        return stockData;
+        const response = await fetch("/api/stocks");
+        const stockQuoteData = await response.json();
+        return stockQuoteData;
       } catch (ex) {
         console.log(ex);
-        let stockData = await getStocks();
-        return stockData;
+        throw ex;
       }
     });
 

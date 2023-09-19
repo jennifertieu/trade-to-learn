@@ -4,6 +4,7 @@ import mongoClientPromise from "./mongoDBClient";
 import { Collection } from "mongodb";
 import PortfolioDocument from "@/interfaces/PortfolioDocument";
 import { ObjectId } from "mongodb";
+import StockQuote from "@/interfaces/StockQuote";
 
 async function getPortfolioCollection() {
   const db = (await mongoClientPromise).db();
@@ -216,6 +217,37 @@ export async function getStockQuotes() {
     const stocks = await getStocksCollection();
     const response = stocks.find({}).toArray();
     return response;
+  } catch (ex) {
+    console.error("Error in getting stock data from the database", ex);
+    throw ex;
+  }
+}
+
+export async function upsertStockQuotes(
+  stockQuotes: Array<StockQuote> | undefined
+) {
+  try {
+    if (typeof stockQuotes === undefined) {
+      return undefined;
+    }
+    // update stock data
+    const stocks = await getStocksCollection();
+    const formatData = stockQuotes?.map((stock) => {
+      return {
+        updateOne: {
+          filter: { ticker: stock.ticker },
+          update: {
+            $set: {
+              ...stock,
+            },
+          },
+          upsert: true,
+        },
+      };
+    });
+
+    const updateResults = await stocks.bulkWrite(formatData || []);
+    return updateResults;
   } catch (ex) {
     console.error("Error in getting stock data from the database", ex);
     throw ex;
