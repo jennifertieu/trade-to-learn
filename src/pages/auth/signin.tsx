@@ -52,6 +52,7 @@ export default function SignIn({
               <button
                 className="mt-2 py-2 px-4 border rounded-lg hover:bg-blue-600 hover:border-blue-600"
                 onClick={() => signIn(provider.id)}
+                data-testid={provider.id}
               >
                 Sign in with {provider.name}
               </button>

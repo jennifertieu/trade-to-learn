@@ -1,6 +1,5 @@
 import Head from "next/head";
 import { MutableRefObject, useRef, useState } from "react";
-import { deleteUserPortfolio } from "@/lib/portfolioApiService";
 import { useSession } from "next-auth/react";
 import { toast } from "react-toastify";
 import { signOut } from "next-auth/react";
@@ -26,10 +25,14 @@ export default function Profile() {
       dialogRef.current?.close();
       setIsExecuting(true);
       // delete user portfolio
-      await deleteUserPortfolio(session);
-      // delete user data
-      await fetch(`/api/users/${session?.user.id}`, {
+      await fetch(`/api/portfolio/${session?.user.id}`, {
         method: "DELETE",
+        headers: {
+          "Context-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: session?.user.id,
+        }),
       });
       // display success message
       toast.success("Account deleted successfully. Logging out...");

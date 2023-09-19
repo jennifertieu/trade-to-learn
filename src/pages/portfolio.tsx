@@ -4,8 +4,6 @@ import Table from "@/components/Table";
 import { useState, useEffect, useContext } from "react";
 import { useQuery, UseQueryResult } from "react-query";
 import StockQuote from "@/interfaces/StockQuote";
-import { getStockData } from "@/lib/stockDataApiService";
-import { getStocks, upsertStocks } from "@/lib/stocksApiService";
 import { PortfolioContext } from "@/context/PortfolioContext";
 import InfoTip from "@/components/InfoTip";
 
@@ -37,13 +35,12 @@ export default function Portfolio() {
   const { data, isLoading, error }: UseQueryResult<StockQuote[], Error> =
     useQuery("stockData", async () => {
       try {
-        let stockData = await getStockData();
-        await upsertStocks(stockData);
-        return stockData;
+        const response = await fetch("/api/stocks");
+        const stockQuoteData = await response.json();
+        return stockQuoteData;
       } catch (ex) {
         console.log(ex);
-        let stockData = await getStocks();
-        return stockData;
+        throw ex;
       }
     });
 

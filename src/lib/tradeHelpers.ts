@@ -1,4 +1,5 @@
 import Portfolio from "@/interfaces/Portfolio";
+import PortfolioDocument from "@/interfaces/PortfolioDocument";
 import TradeQuoteData from "@/interfaces/TradeQuoteData";
 import TradeRequest from "@/interfaces/TradeRequest";
 
@@ -14,7 +15,7 @@ export function getQuoteDetails(
 }
 
 export function calculateUserTrade(
-  portfolio: Portfolio,
+  portfolio: PortfolioDocument,
   name: string | undefined,
   ticker: string,
   quantity: number,
