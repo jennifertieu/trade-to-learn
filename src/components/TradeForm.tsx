@@ -3,19 +3,9 @@ import TradeRequest from "@/interfaces/TradeRequest";
 import TradeQuoteData from "@/interfaces/TradeQuoteData";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { toast } from "react-toastify";
-import {
-  calculateUserTrade,
-  getQuoteDetails,
-  calculateUserCash,
-} from "@/lib/tradeHelpers";
+import { getQuoteDetails } from "@/lib/tradeHelpers";
 import { PortfolioContext } from "@/context/PortfolioContext";
-import { addUserTransactions } from "@/lib/portfolioTransactionsApiService";
 import { useSession } from "next-auth/react";
-import {
-  deleteUserStock,
-  upsertUserStock,
-} from "@/lib/portfolioStocksApiService";
-import { updateUserPortfolio } from "@/lib/portfolioApiService";
 import InfoTip from "./InfoTip";
 
 interface TradeProps {
@@ -50,22 +40,16 @@ const TradeForm: React.FC<TradeProps> = ({ tradeQuoteData }) => {
   const quantityInput = watch("quantity");
   const tickerInput = watch("ticker");
   const tickerPrice = getQuoteDetails(tickerInput, tradeQuoteData)?.price;
-  const {
-    portfolio,
-    updateCash,
-    updateUserHoldings,
-    addTransaction,
-    hasSufficientStockForSale,
-  } = useContext(PortfolioContext);
+  const { portfolio, updatePortfolio, hasSufficientStockForSale } =
+    useContext(PortfolioContext);
   const { data: session } = useSession();
   const [isExecuting, setIsExecuting] = useState(false);
 
   const onSubmit: SubmitHandler<Inputs> = async (data) => {
     try {
-      const { ticker, action } = data;
+      const { ticker, action, orderType, duration } = data;
       const quantity = +data.quantity;
       const tradeQuote = getQuoteDetails(ticker, tradeQuoteData);
-      const name = tradeQuote?.name;
       const price = tradeQuote?.price ? tradeQuote.price : 0;
       const totalPrice = quantity * price;
 
@@ -90,42 +74,22 @@ const TradeForm: React.FC<TradeProps> = ({ tradeQuoteData }) => {
 
       setIsExecuting(true);
 
-      const transactionResponse = await addUserTransactions(session, {
-        ...data,
-        name,
-        total: totalPrice,
-        date: new Date().toISOString(),
-        price,
-      } as TradeRequest);
-      addTransaction(transactionResponse);
-
-      const trade = calculateUserTrade(
-        portfolio,
-        name,
-        ticker,
-        quantity,
-        price,
-        action
-      );
-
-      if (trade?.quantity === 0) {
-        const deleteResponse = await deleteUserStock(session, ticker);
-        updateUserHoldings(deleteResponse);
-      } else {
-        const updatedResponse = await upsertUserStock(session, trade);
-        updateUserHoldings(updatedResponse);
-      }
-
-      const cashCalculated = calculateUserCash(
-        portfolio.cash,
-        quantity * price,
-        action
-      );
-      const portfolioResponse = await updateUserPortfolio(
-        session,
-        cashCalculated
-      );
-      updateCash(portfolioResponse.value.cash);
+      const portfolioUpdated = await fetch(`/api/trade`, {
+        method: "POST",
+        headers: {
+          "Context-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId: session?.user.id,
+          ticker,
+          action,
+          quantity,
+          orderType,
+          duration,
+        }),
+      });
+      const responseData = await portfolioUpdated.json();
+      updatePortfolio(responseData);
 
       setIsExecuting(false);
 

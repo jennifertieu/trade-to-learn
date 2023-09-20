@@ -1,7 +1,7 @@
-import { NextApiRequest, NextApiResponse } from "next";
-import mongoClientPromise from "@/client/MongoDBClient";
-import { authOptions } from "./auth/[...nextauth]";
+import { fetchStockQuoteData } from "@/lib/stocks";
+import type { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
+import { authOptions } from "./auth/[...nextauth]";
 
 export default async function handler(
   req: NextApiRequest,
@@ -13,25 +13,11 @@ export default async function handler(
     res.status(401).json({ message: "You must be logged in." });
     return;
   }
-
   try {
-    const db = (await mongoClientPromise).db();
-    const stocks = db.collection("stocks");
-
-    switch (req.method) {
-      case "GET":
-        // get all stock data
-        const stocksData = await stocks.find({}).toArray();
-        return res.status(200).json(stocksData);
-      case "PATCH":
-        // update stock data
-        const updateResults = await stocks.bulkWrite(req.body);
-        return res.status(200).json(updateResults);
-      default:
-        return res.status(405).end(`${req.method} is not allowed`);
-    }
-  } catch (ex) {
-    console.log(ex);
-    return res.status(500);
+    const stockQuotes = await fetchStockQuoteData();
+    return res.status(200).json(stockQuotes);
+  } catch (e) {
+    console.log(e);
+    throw e;
   }
 }

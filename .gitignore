@@ -4,6 +4,9 @@
 .env
 .env.development
 
+# cypress
+cypress.env.json
+
 # dependencies
 /node_modules
 /.pnp
